@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tracker | Catarina Reis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1612; font-family: 'DM Sans', sans-serif; color: #e8ddd0; }
+  input, button { font-family: 'DM Sans', sans-serif; }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const { useState, useEffect } = React;
+const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
+
+const C = {
+  bg: "#1a1612", surface: "#231f1a", border: "#3a332b", borderLight: "#4a4038",
+  gold: "#c9a96e", goldDim: "#a07840", cream: "#e8ddd0", muted: "#7a6e63",
+  protein: "#c9a96e", carbs: "#8fa882", fat: "#b07070", cal: "#7a9fb0",
+  danger: "#c47070", success: "#7a9f7a",
+};
+
+const KEY = "cr_tracker_";
+
+function load(code) {
+  try { const v = localStorage.getItem(KEY + code); return v ? JSON.parse(v) : null; }
+  catch { return null; }
+}
+function save(code, data) {
+  try { localStorage.setItem(KEY + code, JSON.stringify(data)); } catch {}
+}
+
+function today() { return new Date().toISOString().split("T")[0]; }
+function fmt(d) { if (!d) return ""; const [y,m,day] = d.split("-"); return `${day}/${m}/${y.slice(2)}`; }
+
+function Input({ label, value, onChange, type="number", step, placeholder, style={} }) {
+  const [focused, setFocused] = useState(false);
+  return React.createElement("div", { style: { display:"flex", flexDirection:"column", gap:4, ...style } },
+    React.createElement("label", { style: { fontSize:11, color:C.muted, letterSpacing:"0.08em", textTransform:"uppercase" } }, label),
+    React.createElement("input", {
+      type, step, value, placeholder,
+      onChange: e => onChange(e.target.value),
+      onFocus: () => setFocused(true),
+      onBlur: () => setFocused(false),
+      style: {
+        background: C.bg, border: `1px solid ${focused ? C.goldDim : C.border}`,
+        borderRadius:6, color:C.cream, padding:"10px 12px", fontSize:14,
+        outline:"none", width:"100%", transition:"border-color 0.15s",
+      }
+    })
+  );
+}
+
+function Btn({ children, onClick, variant="primary", small, disabled }) {
+  const [hov, setHov] = useState(false);
+  const isPrimary = variant === "primary";
+  const isDanger = variant === "danger";
+  return React.createElement("button", {
+    onClick, disabled,
+    onMouseEnter: () => setHov(true),
+    onMouseLeave: () => setHov(false),
+    style: {
+      background: isPrimary ? C.gold : "transparent",
+      color: isPrimary ? C.bg : isDanger ? C.danger : C.muted,
+      border: isPrimary ? "none" : `1px solid ${isDanger ? C.danger : C.border}`,
+      borderRadius:6, padding: small ? "6px 14px" : "11px 22px",
+      fontSize: small ? 12 : 14, fontWeight:600, cursor: disabled ? "not-allowed" : "pointer",
+      opacity: disabled ? 0.5 : hov ? 0.85 : 1, letterSpacing:"0.03em",
+      transition:"opacity 0.15s", whiteSpace:"nowrap",
+    }
+  }, children);
+}
+
+function Tag({ label, value, color }) {
+  return React.createElement("div", { style:{ display:"flex", flexDirection:"column", alignItems:"center", gap:2 } },
+    React.createElement("span", { style:{ fontSize:11, color:C.muted, letterSpacing:"0.06em", textTransform:"uppercase" } }, label),
+    React.createElement("span", { style:{ fontSize:18, fontWeight:700, color: color || C.cream } }, value ?? "—")
+  );
+}
+
+function CustomTooltip({ active, payload, label }) {
+  if (!active || !payload?.length) return null;
+  return React.createElement("div", {
+    style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", fontSize:13 }
+  },
+    React.createElement("div", { style:{ marginBottom:6, color:C.muted, fontSize:11 } }, fmt(label)),
+    payload.map(p => React.createElement("div", { key: p.dataKey, style:{ display:"flex", gap:8, alignItems:"center", marginBottom:2 } },
+      React.createElement("span", { style:{ width:8, height:8, borderRadius:"50%", background:p.color, display:"inline-block" } }),
+      React.createElement("span", { style:{ color:C.muted, minWidth:60 } }, p.name),
+      React.createElement("span", { style:{ color:C.cream, fontWeight:600 } }, `${p.value}${p.dataKey === "peso" ? " kg" : p.dataKey === "calorias" ? " kcal" : " g"}`)
+    ))
+  );
+}
+
+const CHART_OPTIONS = [
+  { key:"peso", label:"Peso", color:C.gold },
+  { key:"proteina", label:"Proteína", color:C.protein },
+  { key:"hidratos", label:"Hidratos", color:C.carbs },
+  { key:"gordura", label:"Gordura", color:C.fat },
+  { key:"calorias", label:"Calorias", color:C.cal },
+];
+
+function LoginScreen({ onLogin }) {
+  const [code, setCode] = useState("");
+  const [name, setName] = useState("");
+  const [isNew, setIsNew] = useState(false);
+  const [checked, setChecked] = useState(false);
+  const [error, setError] = useState("");
+
+  function handleCheck() {
+    if (!code.trim()) return;
+    const data = load(code.trim().toUpperCase());
+    setChecked(true);
+    if (data) { onLogin(code.trim().toUpperCase(), data); }
+    else { setIsNew(true); }
+  }
+
+  function handleCreate() {
+    if (!name.trim()) { setError("Indica o teu nome."); return; }
+    const newData = { name: name.trim(), entries: [] };
+    save(code.trim().toUpperCase(), newData);
+    onLogin(code.trim().toUpperCase(), newData);
+  }
+
+  return React.createElement("div", {
+    style:{ minHeight:"100vh", background:C.bg, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }
+  },
+    React.createElement("div", { style:{ width:"100%", maxWidth:380, textAlign:"center" } },
+      React.createElement("div", { style:{ fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:13, letterSpacing:"0.22em", color:C.gold, textTransform:"uppercase", marginBottom:12 } }, "Catarina Reis"),
+      React.createElement("h1", { style:{ fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:36, fontWeight:300, color:C.cream, margin:"0 0 8px", lineHeight:1.1 } }, "O teu registo"),
+      React.createElement("p", { style:{ color:C.muted, fontSize:14, marginBottom:40, lineHeight:1.6 } }, "Introduz o código que recebeste para aceder ao teu espaço."),
+
+      !checked
+        ? React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:16 } },
+            React.createElement(Input, { label:"Código de acesso", value:code, onChange:setCode, type:"text", placeholder:"ex: MARIA01" }),
+            React.createElement(Btn, { onClick:handleCheck, disabled:!code.trim() }, "Entrar")
+          )
+        : isNew
+        ? React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:16 } },
+            React.createElement("div", { style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 16px", fontSize:13, color:C.muted, textAlign:"left" } },
+              "Código novo: ", React.createElement("span", { style:{ color:C.gold } }, code.trim().toUpperCase()), ". Indica o teu nome para criar o espaço."
+            ),
+            React.createElement(Input, { label:"O teu nome", value:name, onChange:setName, type:"text", placeholder:"ex: Maria" }),
+            error && React.createElement("p", { style:{ color:C.danger, fontSize:13 } }, error),
+            React.createElement(Btn, { onClick:handleCreate, disabled:!name.trim() }, "Criar espaço"),
+            React.createElement(Btn, { variant:"ghost", onClick:() => { setChecked(false); setIsNew(false); setCode(""); } }, "Voltar")
+          )
+        : null
+    )
+  );
+}
+
+function Tracker({ clientCode, clientData, onLogout }) {
+  const [data, setData] = useState(clientData);
+  const [activeChart, setActiveChart] = useState("peso");
+  const [form, setForm] = useState({ date:today(), peso:"", proteina:"", hidratos:"", gordura:"", calorias:"" });
+  const [toast, setToast] = useState("");
+  const [deleteId, setDeleteId] = useState(null);
+  const [tab, setTab] = useState("registo");
+
+  function showToast(msg) { setToast(msg); setTimeout(() => setToast(""), 2500); }
+
+  const sorted = [...data.entries].sort((a,b) => a.date.localeCompare(b.date));
+
+  function handleSave() {
+    if (!form.peso && !form.proteina && !form.hidratos && !form.gordura && !form.calorias) {
+      showToast("Preenche pelo menos um campo."); return;
+    }
+    const entry = {
+      date: form.date,
+      ...(form.peso && { peso: parseFloat(form.peso) }),
+      ...(form.proteina && { proteina: parseFloat(form.proteina) }),
+      ...(form.hidratos && { hidratos: parseFloat(form.hidratos) }),
+      ...(form.gordura && { gordura: parseFloat(form.gordura) }),
+      ...(form.calorias && { calorias: parseFloat(form.calorias) }),
+    };
+    const existing = data.entries.findIndex(e => e.date === form.date);
+    const newEntries = existing >= 0
+      ? data.entries.map((e,i) => i === existing ? { ...e, ...entry } : e)
+      : [...data.entries, entry];
+    const newData = { ...data, entries: newEntries };
+    save(clientCode, newData);
+    setData(newData);
+    setForm({ date:today(), peso:"", proteina:"", hidratos:"", gordura:"", calorias:"" });
+    showToast("Guardado.");
+  }
+
+  function handleDelete(date) {
+    const newEntries = data.entries.filter(e => e.date !== date);
+    const newData = { ...data, entries: newEntries };
+    save(clientCode, newData);
+    setData(newData);
+    setDeleteId(null);
+    showToast("Registo eliminado.");
+  }
+
+  const last = sorted[sorted.length - 1];
+  const first = sorted[0];
+  const pesoChange = last?.peso != null && first?.peso != null ? (last.peso - first.peso).toFixed(1) : null;
+  const chartData = sorted.filter(e => e[activeChart] != null);
+  const activeOpt = CHART_OPTIONS.find(o => o.key === activeChart);
+
+  return React.createElement("div", { style:{ minHeight:"100vh", background:C.bg, color:C.cream } },
+    // Header
+    React.createElement("div", { style:{ borderBottom:`1px solid ${C.border}`, padding:"16px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, background:C.bg, zIndex:10 } },
+      React.createElement("div", null,
+        React.createElement("div", { style:{ fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:11, letterSpacing:"0.2em", color:C.gold, textTransform:"uppercase" } }, "Catarina Reis"),
+        React.createElement("div", { style:{ fontSize:16, fontWeight:600, color:C.cream, marginTop:2 } }, data.name)
+      ),
+      React.createElement("div", { style:{ display:"flex", alignItems:"center", gap:12 } },
+        React.createElement("span", { style:{ fontSize:11, color:C.muted, background:C.surface, border:`1px solid ${C.border}`, borderRadius:4, padding:"4px 10px", letterSpacing:"0.06em" } }, clientCode),
+        React.createElement(Btn, { variant:"ghost", small:true, onClick:onLogout }, "Sair")
+      )
+    ),
+
+    React.createElement("div", { style:{ maxWidth:680, margin:"0 auto", padding:"24px 20px 60px" } },
+      // Stats
+      sorted.length > 0 && React.createElement("div", { style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:"20px 24px", display:"flex", gap:0, justifyContent:"space-around", marginBottom:24 } },
+        React.createElement(Tag, { label:"Peso atual", value: last?.peso ? `${last.peso} kg` : "—", color:C.gold }),
+        React.createElement("div", { style:{ width:1, background:C.border } }),
+        React.createElement(Tag, { label:"Variação total", value: pesoChange ? `${pesoChange > 0 ? "+" : ""}${pesoChange} kg` : "—", color: pesoChange < 0 ? C.success : pesoChange > 0 ? C.danger : C.cream }),
+        React.createElement("div", { style:{ width:1, background:C.border } }),
+        React.createElement(Tag, { label:"Registos", value:sorted.length })
+      ),
+
+      // Tabs
+      React.createElement("div", { style:{ display:"flex", borderBottom:`1px solid ${C.border}`, marginBottom:28 } },
+        [{ key:"registo", label:"Novo registo" }, { key:"historico", label:"Histórico" }].map(t =>
+          React.createElement("button", {
+            key: t.key, onClick:() => setTab(t.key),
+            style:{ background:"none", border:"none", borderBottom: tab===t.key ? `2px solid ${C.gold}` : "2px solid transparent", color: tab===t.key ? C.gold : C.muted, padding:"10px 20px", fontSize:14, fontWeight: tab===t.key ? 600 : 400, cursor:"pointer", marginBottom:-1 }
+          }, t.label)
+        )
+      ),
+
+      // Form
+      tab === "registo" && React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:20 } },
+        React.createElement(Input, { label:"Data", value:form.date, onChange:v => setForm({...form, date:v}), type:"date" }),
+        React.createElement("div", { style:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 } },
+          React.createElement(Input, { label:"Peso (kg)", value:form.peso, onChange:v => setForm({...form, peso:v}), step:"0.1", placeholder:"ex: 62.5" }),
+          React.createElement(Input, { label:"Proteína (g)", value:form.proteina, onChange:v => setForm({...form, proteina:v}), placeholder:"ex: 140" }),
+          React.createElement(Input, { label:"Hidratos (g)", value:form.hidratos, onChange:v => setForm({...form, hidratos:v}), placeholder:"ex: 220" }),
+          React.createElement(Input, { label:"Gordura (g)", value:form.gordura, onChange:v => setForm({...form, gordura:v}), placeholder:"ex: 60" }),
+          React.createElement(Input, { label:"Calorias (kcal)", value:form.calorias, onChange:v => setForm({...form, calorias:v}), placeholder:"ex: 1980", style:{ gridColumn:"1 / -1" } })
+        ),
+        React.createElement(Btn, { onClick:handleSave }, "Guardar registo")
+      ),
+
+      // Histórico
+      tab === "historico" && React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:28 } },
+        sorted.length === 0
+          ? React.createElement("p", { style:{ color:C.muted, fontSize:14, textAlign:"center", padding:"40px 0" } }, 'Ainda sem registos. Começa pelo separador "Novo registo".')
+          : React.createElement(React.Fragment, null,
+              // Chart selector
+              React.createElement("div", null,
+                React.createElement("div", { style:{ fontSize:11, color:C.muted, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:12 } }, "Evolução de"),
+                React.createElement("div", { style:{ display:"flex", gap:8, flexWrap:"wrap" } },
+                  CHART_OPTIONS.map(opt =>
+                    React.createElement("button", {
+                      key: opt.key, onClick:() => setActiveChart(opt.key),
+                      style:{ background: activeChart===opt.key ? opt.color : "transparent", color: activeChart===opt.key ? C.bg : C.muted, border:`1px solid ${activeChart===opt.key ? opt.color : C.border}`, borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:600, cursor:"pointer" }
+                    }, opt.label)
+                  )
+                )
+              ),
+
+              // Chart
+              chartData.length > 0
+                ? React.createElement("div", { style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:"20px 12px 12px" } },
+                    React.createElement(ResponsiveContainer, { width:"100%", height:220 },
+                      React.createElement(LineChart, { data:chartData, margin:{ top:4, right:8, left:-12, bottom:0 } },
+                        React.createElement(CartesianGrid, { strokeDasharray:"3 3", stroke:C.border, vertical:false }),
+                        React.createElement(XAxis, { dataKey:"date", tickFormatter:fmt, tick:{ fill:C.muted, fontSize:11 }, axisLine:false, tickLine:false }),
+                        React.createElement(YAxis, { tick:{ fill:C.muted, fontSize:11 }, axisLine:false, tickLine:false, domain:["auto","auto"] }),
+                        React.createElement(Tooltip, { content: React.createElement(CustomTooltip) }),
+                        React.createElement(Line, { type:"monotone", dataKey:activeChart, name:activeOpt.label, stroke:activeOpt.color, strokeWidth:2, dot:{ r:4, fill:activeOpt.color, strokeWidth:0 }, activeDot:{ r:6, fill:activeOpt.color } })
+                      )
+                    )
+                  )
+                : React.createElement("p", { style:{ color:C.muted, fontSize:13, textAlign:"center" } }, `Sem dados de ${activeOpt.label.toLowerCase()} ainda.`),
+
+              // List
+              React.createElement("div", null,
+                React.createElement("div", { style:{ fontSize:11, color:C.muted, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:12 } }, "Todos os registos"),
+                React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:8 } },
+                  [...sorted].reverse().map(e =>
+                    React.createElement("div", { key:e.date, style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"14px 16px" } },
+                      React.createElement("div", { style:{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" } },
+                        React.createElement("span", { style:{ fontSize:13, fontWeight:600, color:C.gold } }, fmt(e.date)),
+                        deleteId === e.date
+                          ? React.createElement("div", { style:{ display:"flex", gap:8 } },
+                              React.createElement(Btn, { small:true, variant:"danger", onClick:() => handleDelete(e.date) }, "Confirmar"),
+                              React.createElement(Btn, { small:true, variant:"ghost", onClick:() => setDeleteId(null) }, "Cancelar")
+                            )
+                          : React.createElement("button", { onClick:() => setDeleteId(e.date), style:{ background:"none", border:"none", color:C.muted, cursor:"pointer", fontSize:18, lineHeight:1 } }, "×")
+                      ),
+                      React.createElement("div", { style:{ display:"flex", gap:16, marginTop:10, flexWrap:"wrap" } },
+                        e.peso != null && React.createElement("span", { style:{ fontSize:13, color:C.gold } }, React.createElement("b", null, e.peso), React.createElement("span", { style:{ color:C.muted } }, " kg")),
+                        e.proteina != null && React.createElement("span", { style:{ fontSize:13, color:C.protein } }, React.createElement("b", null, e.proteina, "g"), React.createElement("span", { style:{ color:C.muted } }, " P")),
+                        e.hidratos != null && React.createElement("span", { style:{ fontSize:13, color:C.carbs } }, React.createElement("b", null, e.hidratos, "g"), React.createElement("span", { style:{ color:C.muted } }, " HC")),
+                        e.gordura != null && React.createElement("span", { style:{ fontSize:13, color:C.fat } }, React.createElement("b", null, e.gordura, "g"), React.createElement("span", { style:{ color:C.muted } }, " G")),
+                        e.calorias != null && React.createElement("span", { style:{ fontSize:13, color:C.cal } }, React.createElement("b", null, e.calorias), React.createElement("span", { style:{ color:C.muted } }, " kcal"))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+      )
+    ),
+
+    // Toast
+    toast && React.createElement("div", {
+      style:{ position:"fixed", bottom:28, left:"50%", transform:"translateX(-50%)", background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 20px", fontSize:13, color:C.cream, boxShadow:"0 4px 24px rgba(0,0,0,0.4)", zIndex:100, whiteSpace:"nowrap" }
+    }, toast)
+  );
+}
+
+function App() {
+  const [session, setSession] = useState(null);
+  if (!session) return React.createElement(LoginScreen, { onLogin:(code, data) => setSession({ code, data }) });
+  return React.createElement(Tracker, { clientCode:session.code, clientData:session.data, onLogout:() => setSession(null) });
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+</script>
+</body>
+</html>
