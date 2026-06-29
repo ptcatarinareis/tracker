@@ -6,334 +6,464 @@
 <title>Tracker | Catarina Reis</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet" />
-<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #1a1612; font-family: 'DM Sans', sans-serif; color: #e8ddd0; }
-  input, button { font-family: 'DM Sans', sans-serif; }
-  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
-  input[type="number"]::-webkit-inner-spin-button,
-  input[type="number"]::-webkit-outer-spin-button { opacity: 0.4; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #1a1612; --surface: #231f1a; --border: #3a332b;
+  --gold: #c9a96e; --gold-dim: #a07840; --cream: #e8ddd0; --muted: #7a6e63;
+  --protein: #c9a96e; --carbs: #8fa882; --fat: #b07070; --cal: #7a9fb0;
+  --danger: #c47070; --success: #7a9f7a;
+}
+body { background: var(--bg); font-family: 'DM Sans', sans-serif; color: var(--cream); min-height: 100vh; }
+input, button, select { font-family: 'DM Sans', sans-serif; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+
+/* Layout */
+.screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-box { width: 100%; max-width: 380px; text-align: center; }
+.eyebrow { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 13px; letter-spacing: 0.22em; color: var(--gold); text-transform: uppercase; margin-bottom: 12px; }
+h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 36px; font-weight: 300; color: var(--cream); margin-bottom: 8px; line-height: 1.1; }
+.subtitle { color: var(--muted); font-size: 14px; margin-bottom: 40px; line-height: 1.6; }
+
+/* Form elements */
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.field input { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--cream); padding: 10px 12px; font-size: 14px; outline: none; width: 100%; transition: border-color 0.15s; }
+.field input:focus { border-color: var(--gold-dim); }
+.form-stack { display: flex; flex-direction: column; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.span-2 { grid-column: 1 / -1; }
+
+/* Buttons */
+.btn { border-radius: 6px; padding: 11px 22px; font-size: 14px; font-weight: 600; cursor: pointer; letter-spacing: 0.03em; transition: opacity 0.15s; white-space: nowrap; border: none; }
+.btn:hover { opacity: 0.85; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-primary { background: var(--gold); color: var(--bg); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+.btn-danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+
+/* Info box */
+.info-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 13px; color: var(--muted); text-align: left; }
+.info-box span { color: var(--gold); }
+.error-msg { color: var(--danger); font-size: 13px; }
+
+/* Header */
+.header { border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; background: var(--bg); z-index: 10; }
+.header-eyebrow { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 11px; letter-spacing: 0.2em; color: var(--gold); text-transform: uppercase; }
+.header-name { font-size: 16px; font-weight: 600; color: var(--cream); margin-top: 2px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.code-badge { font-size: 11px; color: var(--muted); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 4px 10px; letter-spacing: 0.06em; }
+
+/* Main content */
+.main { max-width: 680px; margin: 0 auto; padding: 24px 20px 60px; }
+
+/* Stats */
+.stats-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; display: flex; justify-content: space-around; margin-bottom: 24px; }
+.stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.stat-label { font-size: 11px; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.stat-value { font-size: 18px; font-weight: 700; }
+.divider-v { width: 1px; background: var(--border); }
+
+/* Tabs */
+.tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 28px; }
+.tab { background: none; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 10px 20px; font-size: 14px; font-weight: 400; cursor: pointer; margin-bottom: -1px; transition: color 0.15s; }
+.tab.active { border-bottom-color: var(--gold); color: var(--gold); font-weight: 600; }
+
+/* Chart selector */
+.section-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 12px; }
+.chip-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+.chip { border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 600; cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--muted); transition: all 0.15s; }
+
+/* Chart */
+.chart-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px 16px 12px; margin-bottom: 28px; }
+canvas { display: block; width: 100% !important; }
+
+/* Entry list */
+.entry { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin-bottom: 8px; }
+.entry-top { display: flex; justify-content: space-between; align-items: flex-start; }
+.entry-date { font-size: 13px; font-weight: 600; color: var(--gold); }
+.entry-vals { display: flex; gap: 16px; margin-top: 10px; flex-wrap: wrap; font-size: 13px; }
+.del-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 20px; line-height: 1; padding: 0; }
+.confirm-row { display: flex; gap: 8px; }
+.empty { color: var(--muted); font-size: 14px; text-align: center; padding: 40px 0; }
+
+/* Toast */
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 20px; font-size: 13px; color: var(--cream); box-shadow: 0 4px 24px rgba(0,0,0,0.4); z-index: 100; white-space: nowrap; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+.toast.show { opacity: 1; }
+
+.hidden { display: none !important; }
 </style>
 </head>
 <body>
-<div id="root"></div>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen">
+  <div class="login-box">
+    <div class="eyebrow">Catarina Reis</div>
+    <h1>O teu registo</h1>
+    <p class="subtitle">Introduz o código que recebeste para aceder ao teu espaço.</p>
+    <div id="login-step1" class="form-stack">
+      <div class="field"><label>Código de acesso</label><input id="inp-code" type="text" placeholder="ex: MARIA01" /></div>
+      <button class="btn btn-primary" onclick="checkCode()">Entrar</button>
+    </div>
+    <div id="login-step2" class="form-stack hidden">
+      <div class="info-box">Código novo: <span id="display-code"></span>. Indica o teu nome para criar o espaço.</div>
+      <div class="field"><label>O teu nome</label><input id="inp-name" type="text" placeholder="ex: Maria" /></div>
+      <p id="login-error" class="error-msg hidden"></p>
+      <button class="btn btn-primary" onclick="createSpace()">Criar espaço</button>
+      <button class="btn btn-ghost" onclick="backToStep1()">Voltar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRACKER -->
+<div id="tracker-screen" class="hidden">
+  <div class="header">
+    <div>
+      <div class="header-eyebrow">Catarina Reis</div>
+      <div class="header-name" id="hdr-name"></div>
+    </div>
+    <div class="header-right">
+      <span class="code-badge" id="hdr-code"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Sair</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Stats -->
+    <div class="stats-bar" id="stats-bar" style="display:none">
+      <div class="stat"><span class="stat-label">Peso atual</span><span class="stat-value" id="stat-peso" style="color:var(--gold)">—</span></div>
+      <div class="divider-v"></div>
+      <div class="stat"><span class="stat-label">Variação total</span><span class="stat-value" id="stat-var">—</span></div>
+      <div class="divider-v"></div>
+      <div class="stat"><span class="stat-label">Registos</span><span class="stat-value" id="stat-count">0</span></div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('registo', this)">Novo registo</button>
+      <button class="tab" onclick="switchTab('historico', this)">Histórico</button>
+    </div>
+
+    <!-- Registo -->
+    <div id="tab-registo">
+      <div class="form-stack">
+        <div class="field"><label>Data</label><input id="f-date" type="date" /></div>
+        <div class="grid-2">
+          <div class="field"><label>Peso (kg)</label><input id="f-peso" type="number" step="0.1" placeholder="ex: 62.5" /></div>
+          <div class="field"><label>Proteína (g)</label><input id="f-p" type="number" placeholder="ex: 140" /></div>
+          <div class="field"><label>Hidratos (g)</label><input id="f-hc" type="number" placeholder="ex: 220" /></div>
+          <div class="field"><label>Gordura (g)</label><input id="f-g" type="number" placeholder="ex: 60" /></div>
+          <div class="field span-2"><label>Calorias (kcal)</label><input id="f-cal" type="number" placeholder="ex: 1980" /></div>
+        </div>
+        <button class="btn btn-primary" onclick="saveEntry()">Guardar registo</button>
+      </div>
+    </div>
+
+    <!-- Histórico -->
+    <div id="tab-historico" class="hidden">
+      <p class="empty" id="hist-empty">Ainda sem registos. Começa pelo separador "Novo registo".</p>
+      <div id="hist-content" class="hidden">
+        <div class="section-label">Evolução de</div>
+        <div class="chip-row" id="chip-row"></div>
+        <div class="chart-wrap"><canvas id="myChart" height="200"></canvas></div>
+        <div class="section-label">Todos os registos</div>
+        <div id="entry-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-const { useState, useEffect } = React;
-const { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } = Recharts;
-
-const C = {
-  bg: "#1a1612", surface: "#231f1a", border: "#3a332b", borderLight: "#4a4038",
-  gold: "#c9a96e", goldDim: "#a07840", cream: "#e8ddd0", muted: "#7a6e63",
-  protein: "#c9a96e", carbs: "#8fa882", fat: "#b07070", cal: "#7a9fb0",
-  danger: "#c47070", success: "#7a9f7a",
-};
-
+// ── State ──────────────────────────────────────────────────────────
 const KEY = "cr_tracker_";
+let currentCode = "";
+let currentData = null;
+let activeChart = "peso";
+let pendingDelete = null;
+let chartInstance = null;
 
-function load(code) {
-  try { const v = localStorage.getItem(KEY + code); return v ? JSON.parse(v) : null; }
-  catch { return null; }
-}
-function save(code, data) {
-  try { localStorage.setItem(KEY + code, JSON.stringify(data)); } catch {}
-}
-
-function today() { return new Date().toISOString().split("T")[0]; }
-function fmt(d) { if (!d) return ""; const [y,m,day] = d.split("-"); return `${day}/${m}/${y.slice(2)}`; }
-
-function Input({ label, value, onChange, type="number", step, placeholder, style={} }) {
-  const [focused, setFocused] = useState(false);
-  return React.createElement("div", { style: { display:"flex", flexDirection:"column", gap:4, ...style } },
-    React.createElement("label", { style: { fontSize:11, color:C.muted, letterSpacing:"0.08em", textTransform:"uppercase" } }, label),
-    React.createElement("input", {
-      type, step, value, placeholder,
-      onChange: e => onChange(e.target.value),
-      onFocus: () => setFocused(true),
-      onBlur: () => setFocused(false),
-      style: {
-        background: C.bg, border: `1px solid ${focused ? C.goldDim : C.border}`,
-        borderRadius:6, color:C.cream, padding:"10px 12px", fontSize:14,
-        outline:"none", width:"100%", transition:"border-color 0.15s",
-      }
-    })
-  );
-}
-
-function Btn({ children, onClick, variant="primary", small, disabled }) {
-  const [hov, setHov] = useState(false);
-  const isPrimary = variant === "primary";
-  const isDanger = variant === "danger";
-  return React.createElement("button", {
-    onClick, disabled,
-    onMouseEnter: () => setHov(true),
-    onMouseLeave: () => setHov(false),
-    style: {
-      background: isPrimary ? C.gold : "transparent",
-      color: isPrimary ? C.bg : isDanger ? C.danger : C.muted,
-      border: isPrimary ? "none" : `1px solid ${isDanger ? C.danger : C.border}`,
-      borderRadius:6, padding: small ? "6px 14px" : "11px 22px",
-      fontSize: small ? 12 : 14, fontWeight:600, cursor: disabled ? "not-allowed" : "pointer",
-      opacity: disabled ? 0.5 : hov ? 0.85 : 1, letterSpacing:"0.03em",
-      transition:"opacity 0.15s", whiteSpace:"nowrap",
-    }
-  }, children);
-}
-
-function Tag({ label, value, color }) {
-  return React.createElement("div", { style:{ display:"flex", flexDirection:"column", alignItems:"center", gap:2 } },
-    React.createElement("span", { style:{ fontSize:11, color:C.muted, letterSpacing:"0.06em", textTransform:"uppercase" } }, label),
-    React.createElement("span", { style:{ fontSize:18, fontWeight:700, color: color || C.cream } }, value ?? "—")
-  );
-}
-
-function CustomTooltip({ active, payload, label }) {
-  if (!active || !payload?.length) return null;
-  return React.createElement("div", {
-    style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 14px", fontSize:13 }
-  },
-    React.createElement("div", { style:{ marginBottom:6, color:C.muted, fontSize:11 } }, fmt(label)),
-    payload.map(p => React.createElement("div", { key: p.dataKey, style:{ display:"flex", gap:8, alignItems:"center", marginBottom:2 } },
-      React.createElement("span", { style:{ width:8, height:8, borderRadius:"50%", background:p.color, display:"inline-block" } }),
-      React.createElement("span", { style:{ color:C.muted, minWidth:60 } }, p.name),
-      React.createElement("span", { style:{ color:C.cream, fontWeight:600 } }, `${p.value}${p.dataKey === "peso" ? " kg" : p.dataKey === "calorias" ? " kcal" : " g"}`)
-    ))
-  );
-}
-
-const CHART_OPTIONS = [
-  { key:"peso", label:"Peso", color:C.gold },
-  { key:"proteina", label:"Proteína", color:C.protein },
-  { key:"hidratos", label:"Hidratos", color:C.carbs },
-  { key:"gordura", label:"Gordura", color:C.fat },
-  { key:"calorias", label:"Calorias", color:C.cal },
+const METRICS = [
+  { key:"peso",     label:"Peso",     color:"#c9a96e" },
+  { key:"proteina", label:"Proteína", color:"#c9a96e" },
+  { key:"hidratos", label:"Hidratos", color:"#8fa882" },
+  { key:"gordura",  label:"Gordura",  color:"#b07070" },
+  { key:"calorias", label:"Calorias", color:"#7a9fb0" },
 ];
 
-function LoginScreen({ onLogin }) {
-  const [code, setCode] = useState("");
-  const [name, setName] = useState("");
-  const [isNew, setIsNew] = useState(false);
-  const [checked, setChecked] = useState(false);
-  const [error, setError] = useState("");
-
-  function handleCheck() {
-    if (!code.trim()) return;
-    const data = load(code.trim().toUpperCase());
-    setChecked(true);
-    if (data) { onLogin(code.trim().toUpperCase(), data); }
-    else { setIsNew(true); }
-  }
-
-  function handleCreate() {
-    if (!name.trim()) { setError("Indica o teu nome."); return; }
-    const newData = { name: name.trim(), entries: [] };
-    save(code.trim().toUpperCase(), newData);
-    onLogin(code.trim().toUpperCase(), newData);
-  }
-
-  return React.createElement("div", {
-    style:{ minHeight:"100vh", background:C.bg, display:"flex", alignItems:"center", justifyContent:"center", padding:24 }
-  },
-    React.createElement("div", { style:{ width:"100%", maxWidth:380, textAlign:"center" } },
-      React.createElement("div", { style:{ fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:13, letterSpacing:"0.22em", color:C.gold, textTransform:"uppercase", marginBottom:12 } }, "Catarina Reis"),
-      React.createElement("h1", { style:{ fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:36, fontWeight:300, color:C.cream, margin:"0 0 8px", lineHeight:1.1 } }, "O teu registo"),
-      React.createElement("p", { style:{ color:C.muted, fontSize:14, marginBottom:40, lineHeight:1.6 } }, "Introduz o código que recebeste para aceder ao teu espaço."),
-
-      !checked
-        ? React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:16 } },
-            React.createElement(Input, { label:"Código de acesso", value:code, onChange:setCode, type:"text", placeholder:"ex: MARIA01" }),
-            React.createElement(Btn, { onClick:handleCheck, disabled:!code.trim() }, "Entrar")
-          )
-        : isNew
-        ? React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:16 } },
-            React.createElement("div", { style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"12px 16px", fontSize:13, color:C.muted, textAlign:"left" } },
-              "Código novo: ", React.createElement("span", { style:{ color:C.gold } }, code.trim().toUpperCase()), ". Indica o teu nome para criar o espaço."
-            ),
-            React.createElement(Input, { label:"O teu nome", value:name, onChange:setName, type:"text", placeholder:"ex: Maria" }),
-            error && React.createElement("p", { style:{ color:C.danger, fontSize:13 } }, error),
-            React.createElement(Btn, { onClick:handleCreate, disabled:!name.trim() }, "Criar espaço"),
-            React.createElement(Btn, { variant:"ghost", onClick:() => { setChecked(false); setIsNew(false); setCode(""); } }, "Voltar")
-          )
-        : null
-    )
-  );
+// ── Storage ────────────────────────────────────────────────────────
+function load(code) {
+  try { const v = localStorage.getItem(KEY+code); return v ? JSON.parse(v) : null; } catch { return null; }
+}
+function save(code, data) {
+  try { localStorage.setItem(KEY+code, JSON.stringify(data)); } catch {}
 }
 
-function Tracker({ clientCode, clientData, onLogout }) {
-  const [data, setData] = useState(clientData);
-  const [activeChart, setActiveChart] = useState("peso");
-  const [form, setForm] = useState({ date:today(), peso:"", proteina:"", hidratos:"", gordura:"", calorias:"" });
-  const [toast, setToast] = useState("");
-  const [deleteId, setDeleteId] = useState(null);
-  const [tab, setTab] = useState("registo");
+// ── Utils ──────────────────────────────────────────────────────────
+function today() { return new Date().toISOString().split("T")[0]; }
+function fmt(d) { if(!d) return ""; const [y,m,day]=d.split("-"); return `${day}/${m}`; }
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg; t.classList.add("show");
+  setTimeout(() => t.classList.remove("show"), 2400);
+}
 
-  function showToast(msg) { setToast(msg); setTimeout(() => setToast(""), 2500); }
-
-  const sorted = [...data.entries].sort((a,b) => a.date.localeCompare(b.date));
-
-  function handleSave() {
-    if (!form.peso && !form.proteina && !form.hidratos && !form.gordura && !form.calorias) {
-      showToast("Preenche pelo menos um campo."); return;
-    }
-    const entry = {
-      date: form.date,
-      ...(form.peso && { peso: parseFloat(form.peso) }),
-      ...(form.proteina && { proteina: parseFloat(form.proteina) }),
-      ...(form.hidratos && { hidratos: parseFloat(form.hidratos) }),
-      ...(form.gordura && { gordura: parseFloat(form.gordura) }),
-      ...(form.calorias && { calorias: parseFloat(form.calorias) }),
-    };
-    const existing = data.entries.findIndex(e => e.date === form.date);
-    const newEntries = existing >= 0
-      ? data.entries.map((e,i) => i === existing ? { ...e, ...entry } : e)
-      : [...data.entries, entry];
-    const newData = { ...data, entries: newEntries };
-    save(clientCode, newData);
-    setData(newData);
-    setForm({ date:today(), peso:"", proteina:"", hidratos:"", gordura:"", calorias:"" });
-    showToast("Guardado.");
+// ── Login ──────────────────────────────────────────────────────────
+function checkCode() {
+  const code = document.getElementById("inp-code").value.trim().toUpperCase();
+  if (!code) return;
+  const data = load(code);
+  if (data) { enterTracker(code, data); }
+  else {
+    document.getElementById("display-code").textContent = code;
+    document.getElementById("login-step1").classList.add("hidden");
+    document.getElementById("login-step2").classList.remove("hidden");
   }
+}
+document.getElementById("inp-code").addEventListener("keydown", e => { if(e.key==="Enter") checkCode(); });
 
-  function handleDelete(date) {
-    const newEntries = data.entries.filter(e => e.date !== date);
-    const newData = { ...data, entries: newEntries };
-    save(clientCode, newData);
-    setData(newData);
-    setDeleteId(null);
-    showToast("Registo eliminado.");
-  }
+function createSpace() {
+  const code = document.getElementById("inp-code").value.trim().toUpperCase();
+  const name = document.getElementById("inp-name").value.trim();
+  if (!name) { document.getElementById("login-error").textContent="Indica o teu nome."; document.getElementById("login-error").classList.remove("hidden"); return; }
+  const data = { name, entries: [] };
+  save(code, data);
+  enterTracker(code, data);
+}
 
-  const last = sorted[sorted.length - 1];
+function backToStep1() {
+  document.getElementById("login-step1").classList.remove("hidden");
+  document.getElementById("login-step2").classList.add("hidden");
+  document.getElementById("inp-code").value = "";
+}
+
+// ── Enter tracker ──────────────────────────────────────────────────
+function enterTracker(code, data) {
+  currentCode = code; currentData = data;
+  document.getElementById("login-screen").classList.add("hidden");
+  document.getElementById("tracker-screen").classList.remove("hidden");
+  document.getElementById("hdr-name").textContent = data.name;
+  document.getElementById("hdr-code").textContent = code;
+  document.getElementById("f-date").value = today();
+  renderStats();
+  renderHistorico();
+}
+
+function logout() {
+  currentCode = ""; currentData = null;
+  document.getElementById("tracker-screen").classList.add("hidden");
+  document.getElementById("login-screen").classList.remove("hidden");
+  document.getElementById("login-step1").classList.remove("hidden");
+  document.getElementById("login-step2").classList.add("hidden");
+  document.getElementById("inp-code").value = "";
+  document.getElementById("inp-name").value = "";
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────
+function switchTab(tab, btn) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById("tab-registo").classList.toggle("hidden", tab !== "registo");
+  document.getElementById("tab-historico").classList.toggle("hidden", tab !== "historico");
+  if (tab === "historico") renderHistorico();
+}
+
+// ── Save entry ─────────────────────────────────────────────────────
+function saveEntry() {
+  const date = document.getElementById("f-date").value;
+  const peso = parseFloat(document.getElementById("f-peso").value) || undefined;
+  const proteina = parseFloat(document.getElementById("f-p").value) || undefined;
+  const hidratos = parseFloat(document.getElementById("f-hc").value) || undefined;
+  const gordura = parseFloat(document.getElementById("f-g").value) || undefined;
+  const calorias = parseFloat(document.getElementById("f-cal").value) || undefined;
+
+  if (!peso && !proteina && !hidratos && !gordura && !calorias) { showToast("Preenche pelo menos um campo."); return; }
+
+  const entry = { date, ...(peso&&{peso}), ...(proteina&&{proteina}), ...(hidratos&&{hidratos}), ...(gordura&&{gordura}), ...(calorias&&{calorias}) };
+  const idx = currentData.entries.findIndex(e => e.date === date);
+  if (idx >= 0) currentData.entries[idx] = { ...currentData.entries[idx], ...entry };
+  else currentData.entries.push(entry);
+
+  save(currentCode, currentData);
+  document.getElementById("f-peso").value = "";
+  document.getElementById("f-p").value = "";
+  document.getElementById("f-hc").value = "";
+  document.getElementById("f-g").value = "";
+  document.getElementById("f-cal").value = "";
+  renderStats();
+  showToast("Guardado.");
+}
+
+// ── Stats ──────────────────────────────────────────────────────────
+function renderStats() {
+  const sorted = [...currentData.entries].sort((a,b) => a.date.localeCompare(b.date));
+  if (!sorted.length) { document.getElementById("stats-bar").style.display = "none"; return; }
+  document.getElementById("stats-bar").style.display = "flex";
+  const last = sorted[sorted.length-1];
   const first = sorted[0];
-  const pesoChange = last?.peso != null && first?.peso != null ? (last.peso - first.peso).toFixed(1) : null;
-  const chartData = sorted.filter(e => e[activeChart] != null);
-  const activeOpt = CHART_OPTIONS.find(o => o.key === activeChart);
-
-  return React.createElement("div", { style:{ minHeight:"100vh", background:C.bg, color:C.cream } },
-    // Header
-    React.createElement("div", { style:{ borderBottom:`1px solid ${C.border}`, padding:"16px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", position:"sticky", top:0, background:C.bg, zIndex:10 } },
-      React.createElement("div", null,
-        React.createElement("div", { style:{ fontFamily:"'Cormorant Garamond', Georgia, serif", fontSize:11, letterSpacing:"0.2em", color:C.gold, textTransform:"uppercase" } }, "Catarina Reis"),
-        React.createElement("div", { style:{ fontSize:16, fontWeight:600, color:C.cream, marginTop:2 } }, data.name)
-      ),
-      React.createElement("div", { style:{ display:"flex", alignItems:"center", gap:12 } },
-        React.createElement("span", { style:{ fontSize:11, color:C.muted, background:C.surface, border:`1px solid ${C.border}`, borderRadius:4, padding:"4px 10px", letterSpacing:"0.06em" } }, clientCode),
-        React.createElement(Btn, { variant:"ghost", small:true, onClick:onLogout }, "Sair")
-      )
-    ),
-
-    React.createElement("div", { style:{ maxWidth:680, margin:"0 auto", padding:"24px 20px 60px" } },
-      // Stats
-      sorted.length > 0 && React.createElement("div", { style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:"20px 24px", display:"flex", gap:0, justifyContent:"space-around", marginBottom:24 } },
-        React.createElement(Tag, { label:"Peso atual", value: last?.peso ? `${last.peso} kg` : "—", color:C.gold }),
-        React.createElement("div", { style:{ width:1, background:C.border } }),
-        React.createElement(Tag, { label:"Variação total", value: pesoChange ? `${pesoChange > 0 ? "+" : ""}${pesoChange} kg` : "—", color: pesoChange < 0 ? C.success : pesoChange > 0 ? C.danger : C.cream }),
-        React.createElement("div", { style:{ width:1, background:C.border } }),
-        React.createElement(Tag, { label:"Registos", value:sorted.length })
-      ),
-
-      // Tabs
-      React.createElement("div", { style:{ display:"flex", borderBottom:`1px solid ${C.border}`, marginBottom:28 } },
-        [{ key:"registo", label:"Novo registo" }, { key:"historico", label:"Histórico" }].map(t =>
-          React.createElement("button", {
-            key: t.key, onClick:() => setTab(t.key),
-            style:{ background:"none", border:"none", borderBottom: tab===t.key ? `2px solid ${C.gold}` : "2px solid transparent", color: tab===t.key ? C.gold : C.muted, padding:"10px 20px", fontSize:14, fontWeight: tab===t.key ? 600 : 400, cursor:"pointer", marginBottom:-1 }
-          }, t.label)
-        )
-      ),
-
-      // Form
-      tab === "registo" && React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:20 } },
-        React.createElement(Input, { label:"Data", value:form.date, onChange:v => setForm({...form, date:v}), type:"date" }),
-        React.createElement("div", { style:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 } },
-          React.createElement(Input, { label:"Peso (kg)", value:form.peso, onChange:v => setForm({...form, peso:v}), step:"0.1", placeholder:"ex: 62.5" }),
-          React.createElement(Input, { label:"Proteína (g)", value:form.proteina, onChange:v => setForm({...form, proteina:v}), placeholder:"ex: 140" }),
-          React.createElement(Input, { label:"Hidratos (g)", value:form.hidratos, onChange:v => setForm({...form, hidratos:v}), placeholder:"ex: 220" }),
-          React.createElement(Input, { label:"Gordura (g)", value:form.gordura, onChange:v => setForm({...form, gordura:v}), placeholder:"ex: 60" }),
-          React.createElement(Input, { label:"Calorias (kcal)", value:form.calorias, onChange:v => setForm({...form, calorias:v}), placeholder:"ex: 1980", style:{ gridColumn:"1 / -1" } })
-        ),
-        React.createElement(Btn, { onClick:handleSave }, "Guardar registo")
-      ),
-
-      // Histórico
-      tab === "historico" && React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:28 } },
-        sorted.length === 0
-          ? React.createElement("p", { style:{ color:C.muted, fontSize:14, textAlign:"center", padding:"40px 0" } }, 'Ainda sem registos. Começa pelo separador "Novo registo".')
-          : React.createElement(React.Fragment, null,
-              // Chart selector
-              React.createElement("div", null,
-                React.createElement("div", { style:{ fontSize:11, color:C.muted, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:12 } }, "Evolução de"),
-                React.createElement("div", { style:{ display:"flex", gap:8, flexWrap:"wrap" } },
-                  CHART_OPTIONS.map(opt =>
-                    React.createElement("button", {
-                      key: opt.key, onClick:() => setActiveChart(opt.key),
-                      style:{ background: activeChart===opt.key ? opt.color : "transparent", color: activeChart===opt.key ? C.bg : C.muted, border:`1px solid ${activeChart===opt.key ? opt.color : C.border}`, borderRadius:20, padding:"5px 14px", fontSize:12, fontWeight:600, cursor:"pointer" }
-                    }, opt.label)
-                  )
-                )
-              ),
-
-              // Chart
-              chartData.length > 0
-                ? React.createElement("div", { style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:10, padding:"20px 12px 12px" } },
-                    React.createElement(ResponsiveContainer, { width:"100%", height:220 },
-                      React.createElement(LineChart, { data:chartData, margin:{ top:4, right:8, left:-12, bottom:0 } },
-                        React.createElement(CartesianGrid, { strokeDasharray:"3 3", stroke:C.border, vertical:false }),
-                        React.createElement(XAxis, { dataKey:"date", tickFormatter:fmt, tick:{ fill:C.muted, fontSize:11 }, axisLine:false, tickLine:false }),
-                        React.createElement(YAxis, { tick:{ fill:C.muted, fontSize:11 }, axisLine:false, tickLine:false, domain:["auto","auto"] }),
-                        React.createElement(Tooltip, { content: React.createElement(CustomTooltip) }),
-                        React.createElement(Line, { type:"monotone", dataKey:activeChart, name:activeOpt.label, stroke:activeOpt.color, strokeWidth:2, dot:{ r:4, fill:activeOpt.color, strokeWidth:0 }, activeDot:{ r:6, fill:activeOpt.color } })
-                      )
-                    )
-                  )
-                : React.createElement("p", { style:{ color:C.muted, fontSize:13, textAlign:"center" } }, `Sem dados de ${activeOpt.label.toLowerCase()} ainda.`),
-
-              // List
-              React.createElement("div", null,
-                React.createElement("div", { style:{ fontSize:11, color:C.muted, letterSpacing:"0.08em", textTransform:"uppercase", marginBottom:12 } }, "Todos os registos"),
-                React.createElement("div", { style:{ display:"flex", flexDirection:"column", gap:8 } },
-                  [...sorted].reverse().map(e =>
-                    React.createElement("div", { key:e.date, style:{ background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"14px 16px" } },
-                      React.createElement("div", { style:{ display:"flex", justifyContent:"space-between", alignItems:"flex-start" } },
-                        React.createElement("span", { style:{ fontSize:13, fontWeight:600, color:C.gold } }, fmt(e.date)),
-                        deleteId === e.date
-                          ? React.createElement("div", { style:{ display:"flex", gap:8 } },
-                              React.createElement(Btn, { small:true, variant:"danger", onClick:() => handleDelete(e.date) }, "Confirmar"),
-                              React.createElement(Btn, { small:true, variant:"ghost", onClick:() => setDeleteId(null) }, "Cancelar")
-                            )
-                          : React.createElement("button", { onClick:() => setDeleteId(e.date), style:{ background:"none", border:"none", color:C.muted, cursor:"pointer", fontSize:18, lineHeight:1 } }, "×")
-                      ),
-                      React.createElement("div", { style:{ display:"flex", gap:16, marginTop:10, flexWrap:"wrap" } },
-                        e.peso != null && React.createElement("span", { style:{ fontSize:13, color:C.gold } }, React.createElement("b", null, e.peso), React.createElement("span", { style:{ color:C.muted } }, " kg")),
-                        e.proteina != null && React.createElement("span", { style:{ fontSize:13, color:C.protein } }, React.createElement("b", null, e.proteina, "g"), React.createElement("span", { style:{ color:C.muted } }, " P")),
-                        e.hidratos != null && React.createElement("span", { style:{ fontSize:13, color:C.carbs } }, React.createElement("b", null, e.hidratos, "g"), React.createElement("span", { style:{ color:C.muted } }, " HC")),
-                        e.gordura != null && React.createElement("span", { style:{ fontSize:13, color:C.fat } }, React.createElement("b", null, e.gordura, "g"), React.createElement("span", { style:{ color:C.muted } }, " G")),
-                        e.calorias != null && React.createElement("span", { style:{ fontSize:13, color:C.cal } }, React.createElement("b", null, e.calorias), React.createElement("span", { style:{ color:C.muted } }, " kcal"))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-      )
-    ),
-
-    // Toast
-    toast && React.createElement("div", {
-      style:{ position:"fixed", bottom:28, left:"50%", transform:"translateX(-50%)", background:C.surface, border:`1px solid ${C.border}`, borderRadius:8, padding:"10px 20px", fontSize:13, color:C.cream, boxShadow:"0 4px 24px rgba(0,0,0,0.4)", zIndex:100, whiteSpace:"nowrap" }
-    }, toast)
-  );
+  document.getElementById("stat-peso").textContent = last.peso != null ? `${last.peso} kg` : "—";
+  document.getElementById("stat-count").textContent = sorted.length;
+  if (last.peso != null && first.peso != null) {
+    const diff = (last.peso - first.peso).toFixed(1);
+    const el = document.getElementById("stat-var");
+    el.textContent = `${diff > 0 ? "+" : ""}${diff} kg`;
+    el.style.color = diff < 0 ? "var(--success)" : diff > 0 ? "var(--danger)" : "var(--cream)";
+  } else {
+    document.getElementById("stat-var").textContent = "—";
+  }
 }
 
-function App() {
-  const [session, setSession] = useState(null);
-  if (!session) return React.createElement(LoginScreen, { onLogin:(code, data) => setSession({ code, data }) });
-  return React.createElement(Tracker, { clientCode:session.code, clientData:session.data, onLogout:() => setSession(null) });
+// ── Histórico ──────────────────────────────────────────────────────
+function renderHistorico() {
+  const sorted = [...currentData.entries].sort((a,b) => a.date.localeCompare(b.date));
+  const empty = document.getElementById("hist-empty");
+  const content = document.getElementById("hist-content");
+  if (!sorted.length) { empty.classList.remove("hidden"); content.classList.add("hidden"); return; }
+  empty.classList.add("hidden"); content.classList.remove("hidden");
+  renderChips();
+  renderChart(sorted);
+  renderList(sorted);
 }
 
-ReactDOM.createRoot(document.getElementById("root")).render(React.createElement(App));
+function renderChips() {
+  const row = document.getElementById("chip-row");
+  row.innerHTML = "";
+  METRICS.forEach(m => {
+    const btn = document.createElement("button");
+    btn.className = "chip" + (m.key === activeChart ? " active" : "");
+    btn.textContent = m.label;
+    if (m.key === activeChart) { btn.style.background = m.color; btn.style.color = "#1a1612"; btn.style.borderColor = m.color; }
+    btn.onclick = () => { activeChart = m.key; renderHistorico(); };
+    row.appendChild(btn);
+  });
+}
+
+function renderChart(sorted) {
+  const metric = METRICS.find(m => m.key === activeChart);
+  const filtered = sorted.filter(e => e[activeChart] != null);
+  const canvas = document.getElementById("myChart");
+  const ctx = canvas.getContext("2d");
+
+  // Clear previous chart
+  if (chartInstance) { chartInstance = null; }
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (!filtered.length) return;
+
+  // Draw simple SVG-like chart on canvas
+  const W = canvas.offsetWidth || 640;
+  const H = 200;
+  canvas.width = W * window.devicePixelRatio;
+  canvas.height = H * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  const PAD = { top: 16, right: 16, bottom: 36, left: 44 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  const vals = filtered.map(e => e[activeChart]);
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals);
+  const rangeV = maxV - minV || 1;
+
+  function xPos(i) { return PAD.left + (i / (filtered.length - 1 || 1)) * cW; }
+  function yPos(v) { return PAD.top + cH - ((v - minV) / rangeV) * cH; }
+
+  // Grid lines
+  ctx.strokeStyle = "#3a332b"; ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = PAD.top + (i / 4) * cH;
+    ctx.beginPath(); ctx.moveTo(PAD.left, y); ctx.lineTo(PAD.left + cW, y); ctx.stroke();
+    const val = maxV - (i / 4) * rangeV;
+    ctx.fillStyle = "#7a6e63"; ctx.font = "11px DM Sans, sans-serif"; ctx.textAlign = "right";
+    ctx.fillText(val.toFixed(rangeV < 5 ? 1 : 0), PAD.left - 6, y + 4);
+  }
+
+  // X labels (max 6)
+  const step = Math.ceil(filtered.length / 6);
+  filtered.forEach((e, i) => {
+    if (i % step === 0 || i === filtered.length - 1) {
+      ctx.fillStyle = "#7a6e63"; ctx.font = "11px DM Sans, sans-serif"; ctx.textAlign = "center";
+      ctx.fillText(fmt(e.date), xPos(i), H - 8);
+    }
+  });
+
+  // Line
+  ctx.beginPath(); ctx.strokeStyle = metric.color; ctx.lineWidth = 2; ctx.lineJoin = "round";
+  filtered.forEach((e, i) => {
+    const x = xPos(i), y = yPos(e[activeChart]);
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+
+  // Dots
+  filtered.forEach((e, i) => {
+    ctx.beginPath(); ctx.arc(xPos(i), yPos(e[activeChart]), 4, 0, Math.PI*2);
+    ctx.fillStyle = metric.color; ctx.fill();
+  });
+}
+
+// ── Entry list ─────────────────────────────────────────────────────
+function renderList(sorted) {
+  const list = document.getElementById("entry-list");
+  list.innerHTML = "";
+  [...sorted].reverse().forEach(e => {
+    const div = document.createElement("div");
+    div.className = "entry";
+    div.dataset.date = e.date;
+
+    const vals = [];
+    if (e.peso != null) vals.push(`<span style="color:var(--gold)"><b>${e.peso}</b> <span style="color:var(--muted)">kg</span></span>`);
+    if (e.proteina != null) vals.push(`<span style="color:var(--protein)"><b>${e.proteina}g</b> <span style="color:var(--muted)">P</span></span>`);
+    if (e.hidratos != null) vals.push(`<span style="color:var(--carbs)"><b>${e.hidratos}g</b> <span style="color:var(--muted)">HC</span></span>`);
+    if (e.gordura != null) vals.push(`<span style="color:var(--fat)"><b>${e.gordura}g</b> <span style="color:var(--muted)">G</span></span>`);
+    if (e.calorias != null) vals.push(`<span style="color:var(--cal)"><b>${e.calorias}</b> <span style="color:var(--muted)">kcal</span></span>`);
+
+    div.innerHTML = `
+      <div class="entry-top">
+        <span class="entry-date">${fmt(e.date).replace("/","/")}</span>
+        <div class="confirm-row" id="del-${e.date}" style="display:none">
+          <button class="btn btn-danger btn-sm" onclick="confirmDelete('${e.date}')">Confirmar</button>
+          <button class="btn btn-ghost btn-sm" onclick="cancelDelete('${e.date}')">Cancelar</button>
+        </div>
+        <button class="del-btn" id="delbtn-${e.date}" onclick="askDelete('${e.date}')">×</button>
+      </div>
+      <div class="entry-vals">${vals.join("")}</div>
+    `;
+    // show full date
+    div.querySelector(".entry-date").textContent = `${e.date.split("-")[2]}/${e.date.split("-")[1]}/${e.date.split("-")[0].slice(2)}`;
+    list.appendChild(div);
+  });
+}
+
+function askDelete(date) {
+  document.getElementById(`del-${date}`).style.display = "flex";
+  document.getElementById(`delbtn-${date}`).style.display = "none";
+}
+function cancelDelete(date) {
+  document.getElementById(`del-${date}`).style.display = "none";
+  document.getElementById(`delbtn-${date}`).style.display = "block";
+}
+function confirmDelete(date) {
+  currentData.entries = currentData.entries.filter(e => e.date !== date);
+  save(currentCode, currentData);
+  renderStats(); renderHistorico();
+  showToast("Registo eliminado.");
+}
+
+// Set today's date on load
+document.getElementById("f-date").value = today();
+
+// Redraw chart on resize
+window.addEventListener("resize", () => {
+  if (currentData && !document.getElementById("tab-historico").classList.contains("hidden")) {
+    const sorted = [...currentData.entries].sort((a,b) => a.date.localeCompare(b.date));
+    if (sorted.length) renderChart(sorted);
+  }
+});
 </script>
 </body>
 </html>
