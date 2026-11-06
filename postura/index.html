@@ -77,6 +77,53 @@
   details.exone .ex-img{margin:0 14px;border-radius:8px}
   details.exone p{text-align:center;font-weight:700;font-size:.85rem;padding:10px}
   summary::-webkit-details-marker{display:none}
+  .m{flex-wrap:wrap}
+  .fx{flex-basis:calc(100% - 22px);margin-left:22px;margin-top:2px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:0}
+  .fx summary{cursor:pointer;list-style:none;padding:10px 12px;font-size:.85rem;font-weight:700;color:var(--accent2);display:flex;justify-content:space-between}
+  .fx summary::after{content:"+"} .fx[open] summary::after{content:"–"}
+  .fx p{font-size:.88rem;color:var(--cream);padding:0 12px 10px;line-height:1.55}
+  .fx p b{color:var(--accent2)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 10px}
+  .chips span{font-size:.7rem;font-weight:700;letter-spacing:.04em;padding:4px 8px;border-radius:99px;border:1px solid var(--c);color:var(--c)}
+  .locked .fx{display:none}
+  .ln{padding:12px 0;border-top:1px solid var(--line)}
+  .lh{display:flex;align-items:center;gap:8px}
+  .lh b{font-family:var(--display);font-style:italic;font-weight:700;text-transform:uppercase;font-size:1.15rem;letter-spacing:.02em}
+  .tag{font-size:.65rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:var(--grad);color:#fff;padding:3px 7px;border-radius:4px}
+  .bar2{height:6px;background:var(--line);border-radius:99px;margin:8px 0;overflow:hidden}
+  .bar2 i{display:block;height:100%;border-radius:99px}
+  .ln p{font-size:.86rem;color:var(--muted)}
+  #fasciaMap h2{font-size:2rem}
+  @media print{ .fx{display:block} .fx[open] summary::after,.fx summary::after{content:""} }
+  .fxlock{display:block;flex-basis:calc(100% - 22px);margin-left:22px;margin-top:2px;background:var(--bg2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:.85rem;font-weight:700;color:var(--muted);text-decoration:none}
+  .paywall{position:relative;border-radius:var(--radius);padding:22px 20px;margin:18px 0;background:linear-gradient(160deg,#241C48,#141225 70%);border:1px solid transparent;background-clip:padding-box}
+  .paywall::before{content:"";position:absolute;inset:-1px;border-radius:inherit;padding:1px;background:var(--grad);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+  .pwtag{display:inline-block;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;background:var(--grad);color:#fff;padding:4px 9px;border-radius:4px;margin-bottom:12px}
+  .paywall h2{font-size:2.1rem}
+  .paywall .lead b{color:var(--cream)}
+  .pwbox{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:14px;margin:4px 0 14px}
+  .pwcount{font-family:var(--display);font-weight:700;font-style:italic;text-transform:uppercase;font-size:1.1rem;margin-bottom:8px}
+  .pwl{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--muted);padding:4px 0}
+  .pwl i{width:10px;height:10px;border-radius:50%;flex:none}
+  .pwl b{color:var(--cream);font-weight:600;filter:blur(5px);user-select:none}
+  .pwl:first-child b{filter:none}
+  .pwlist{list-style:none;margin:0 0 4px}
+  .pwlist li{padding:6px 0 6px 26px;position:relative;font-size:.95rem}
+  .pwlist li::before{content:"✓";position:absolute;left:0;color:var(--ok);font-weight:800}
+  .paybtn{text-align:center;text-decoration:none}
+  .paybtn.disabled{opacity:.35;pointer-events:none}
+  .pwnote{font-size:.78rem;color:var(--muted);text-align:center;margin-top:10px}
+  .havecode{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+  .havecode summary{cursor:pointer;font-size:.85rem;color:var(--accent2);font-weight:700;list-style:none}
+  .coderow{display:flex;gap:8px;margin-top:10px}
+  .coderow input{flex:1;background:var(--bg2);border:1px solid var(--line);color:var(--cream);border-radius:8px;padding:12px;font:inherit;text-transform:uppercase}
+  .coderow .btn{width:auto;margin:0;padding:12px 18px}
+  .paidnote{margin-top:18px;background:rgba(94,224,160,.1);border:1px solid rgba(94,224,160,.5);color:var(--ok);border-radius:10px;padding:12px;font-size:.9rem}
+  @media print{ .paywall,.fxlock{display:none!important} }
+  .concl{flex-basis:calc(100% - 22px);margin-left:22px;margin-top:4px;background:var(--bg2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+  .concl .ct{display:block;font-size:.66rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);margin-bottom:6px}
+  .concl .cl{display:flex;gap:8px;align-items:flex-start;font-size:.86rem;color:var(--cream);padding:3px 0;line-height:1.4}
+  .concl .cl i{width:8px;height:8px;border-radius:50%;flex:none;margin-top:6px}
   .upload{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:210px;border:2px dashed var(--line);border-radius:var(--radius);background:var(--bg2);cursor:pointer;overflow:hidden;margin-bottom:8px;transition:.2s}
   .upload:hover{border-color:var(--accent)}
   .upload.has{border-style:solid;border-color:var(--accent)}
@@ -155,6 +202,7 @@
       <label class="opt"><input type="radio" name="obj" value="Mudar o corpo"> Quero mudar a forma do meu corpo</label>
       <label class="opt"><input type="radio" name="obj" value="Curiosidade"> Só tenho curiosidade</label>
     </div>
+    <div class="paidnote hidden" id="paidNote">✓ Pagamento confirmado. Faz o scan neste telemóvel e a leitura da fáscia abre automaticamente no fim.</div>
     <button class="btn" id="go1" disabled>Começar o scan</button>
   </section>
 
@@ -228,13 +276,14 @@
 
     <div class="gate" id="gate">
       <h2>Desbloqueia o teu <em>relatório completo</em></h2>
-      <p class="lead" style="margin-bottom:6px">Os graus de cada medida, o lado para onde o teu corpo compensa e o relatório em PDF para guardares.</p>
+      <p class="lead" style="margin-bottom:6px">Os graus de cada medida, que linhas de fáscia estão por trás de cada desvio e o relatório em PDF para guardares. É grátis.</p>
       <label class="f" for="email">O teu melhor email</label>
       <input type="email" id="email" autocomplete="email" placeholder="nome@email.com">
       <label class="check"><input type="checkbox" id="rgpd"> <span>Aceito que a Catarina Reis guarde o meu nome, email e resultados do scan para me enviar o relatório e conteúdos relacionados. Posso cancelar a qualquer momento.</span></label>
       <div class="err" id="err4"></div>
       <button class="btn" id="unlock" disabled>Ver o relatório completo</button>
     </div>
+
 
     <div class="card locked" id="report">
       <div class="legend">
@@ -248,15 +297,35 @@
       <div id="listSide"></div>
     </div>
 
+
+    <div class="paywall hidden" id="paywall">
+      <div class="pwtag">Leitura da fáscia</div>
+      <h2>Descobre <em>porque</em> é que o teu corpo está assim</h2>
+      <p class="lead">Os números mostram <b>onde</b> estão os desvios. A leitura da fáscia mostra <b>de onde vêm</b>: que linhas do teu corpo estão encurtadas ou a compensar, o que isso costuma provocar e por onde começar.</p>
+      <div class="pwbox">
+        <div class="pwcount" id="pwCount"></div>
+      </div>
+      <ul class="pwlist">
+        <li>Que linhas de fáscia estão por trás de cada desvio</li><li>O que cada desvio significa no teu corpo</li>
+        <li>O que costumas sentir por causa disso</li>
+        <li>O que costuma ajudar, por onde começar</li>
+      </ul>
+      <a class="btn paybtn" id="payBtn" href="#">Ver a minha leitura · <span id="pwPrice"></span></a>
+      <p class="pwnote">Pagamento seguro. Depois de pagares voltas a esta página e a leitura abre automaticamente.</p>
+      <details class="havecode"><summary>Já pagaste? Tenho um código</summary>
+        <div class="coderow"><input type="text" id="codeIn" placeholder="FASCIA-XXXXX" autocomplete="off"><button class="btn" id="codeBtn">Abrir</button></div>
+        <div class="err" id="errCode"></div>
+      </details>
+    </div>
     <div id="after" class="hidden">
       <div class="card">
         <p id="thanks"></p>
       </div>
       <button class="btn" onclick="window.print()">Guardar relatório em PDF</button>
-      <button class="btn ghost" id="restart">Fazer novo scan</button>
+      <a class="btn ghost" id="duvidas" href="https://ig.me/m/pt_catarina_reis" target="_blank" rel="noopener" style="text-align:center;text-decoration:none">Tenho dúvidas</a>
     </div>
 
-    <p class="disc">Este scan dá estimativas a partir de pontos detetados automaticamente nas fotos. A precisão depende da qualidade das fotos, da roupa e do ângulo da câmara. Não é um diagnóstico clínico nem substitui uma avaliação presencial.</p>
+    <p class="disc">Este scan dá estimativas a partir de pontos detetados automaticamente nas fotos. A precisão depende da qualidade das fotos, da roupa e do ângulo da câmara. A leitura da fáscia baseia-se no modelo Anatomy Trains (Thomas Myers) e indica tendências prováveis, não certezas. Não é um diagnóstico clínico nem substitui uma avaliação presencial.</p>
   </section>
 
   <footer>RESET · <a href="https://www.instagram.com/pt_catarina_reis/" target="_blank" rel="noopener">@pt_catarina_reis</a></footer>
@@ -276,6 +345,12 @@ const CONFIG = {
   // Exemplo: "https://formspree.io/f/abcdwxyz". Vazio = os contactos não são enviados (modo de teste).
   FORM_ENDPOINT: "https://formspree.io/f/xgaabeob",
   // Mensagem final depois de a pessoa deixar o email ({nome} é substituído pelo nome).
+  // Link de pagamento da leitura da fáscia (Stripe, SumUp, etc.). Vazio = botão desativado.
+  PAY_LINK: "",
+  // Preço mostrado no botão
+  PRICE: "9€",
+  // Impressão digital do código de desbloqueio (não é o código em si). Para mudar o código, pede à Claude.
+  CODE_HASH: "41902e5a896f7063fadee7e9a737f6dbee16bce46a280d87f4f5733892b7357b",
   THANKS: "Obrigada, {nome}. Aqui tens os teus números. Guarda o relatório em PDF: daqui a umas semanas podes repetir o scan e comparar.",
 };
 /* ===================================================================== */
@@ -283,7 +358,7 @@ const CONFIG = {
 import { PoseLandmarker, FilesetResolver } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
 
 const $ = s => document.querySelector(s);
-const state = { nome:"", objetivo:"", front:null, side:null, results:null };
+const state = { nome:"", objetivo:"", front:null, side:null, results:null, paid:false, imgF:"", imgS:"" };
 
 /* ---------- navegação ---------- */
 function go(n){
@@ -437,6 +512,122 @@ function grade(v,ok,mild){ v=Math.abs(v); return v<=ok?"ok":v<=mild?"ligeiro":"a
 const LABEL = {ok:"Alinhado", ligeiro:"Desvio ligeiro", acentuado:"Desvio acentuado"};
 const f1 = n => Math.abs(n).toFixed(1).replace(".",",");
 
+/* ---------- leitura da fáscia (modelo Anatomy Trains, Thomas Myers) ---------- */
+const LINES = {
+  SFL:{n:"Linha Frontal Superficial", c:"#6F8FFF", d:"Corre pela frente do corpo, dos dedos dos pés até ao crânio: canelas, frente das coxas, abdómen, peito e pescoço. Quando encurta, puxa-te para baixo e para a frente."},
+  SBL:{n:"Linha Posterior Superficial", c:"#A27BFF", d:"Corre por trás, da planta do pé até à testa: gémeos, posteriores da coxa, músculos ao longo da coluna e base do crânio. É a linha que te mantém de pé."},
+  LL: {n:"Linha Lateral", c:"#FF6AAE", d:"Corre pelos lados do corpo, do tornozelo à orelha: parte de fora da perna, lados da anca, costelas e pescoço. Equilibra-te de um lado para o outro."},
+  SPL:{n:"Linha Espiral", c:"#FFC857", d:"Enrola-se à volta do corpo em dupla hélice: da cabeça ao ombro do outro lado, cruza o abdómen até à anca e desce até ao arco do pé. Controla as rotações e torções."},
+  DFL:{n:"Linha Frontal Profunda", c:"#5EE0A0", d:"É o teu centro: começa no arco interno do pé e sobe pelos adutores, psoas e diafragma até aos músculos profundos do pescoço. Dá-te suporte por dentro."}
+};
+const opp = s => ({esquerdo:"direito",direito:"esquerdo",esquerda:"direita",direita:"esquerda"})[s]||s;
+
+function fascia(it){
+  const s=it.s, o=opp(it.s);
+  switch(it.k){
+    case "headTilt": return {L:["LL","SPL"],
+      o:`A cabeça inclina para o lado ${s}. Na fáscia, isto costuma querer dizer que a Linha Lateral do lado ${s} está mais curta no pescoço, entre a orelha e o ombro, enquanto a do lado ${o} está esticada a segurar. A Linha Espiral costuma participar, puxando a cabeça numa ligeira rotação.`,
+      f:"Tensão de um só lado do pescoço, rigidez ao rodar a cabeça, dores de cabeça mais de um lado.",
+      a:`Soltar o lado ${s} do pescoço e do ombro e alongar a lateral do tronco desse lado.`};
+    case "shoulders": return {L:["LL","SPL"],
+      o:`O ombro ${s} está mais alto. Ou o lado ${o} do tronco está a puxar para baixo (a Linha Lateral desse lado está mais curta entre a anca e as costelas), ou o trapézio do lado ${s} está a puxar o ombro para cima. Muitas vezes é a caixa torácica que está inclinada e os ombros apenas acompanham.`,
+      f:"Um ombro mais tenso ou pesado, sensação de carregar mais de um lado, diferença ao levantar os braços.",
+      a:`Abrir a lateral do tronco do lado ${o}, soltar o trapézio do lado ${s} e equilibrar a posição das costelas.`};
+    case "hips": return {L:["LL","DFL"],
+      o:`O lado ${s} da anca está mais alto. Os tecidos que ligam a bacia às costelas desse lado estão mais curtos e puxam a anca para cima: por fora a Linha Lateral e, por dentro, o quadrado lombar, que faz parte da Linha Frontal Profunda. Também pode haver uma diferença funcional no comprimento das pernas, à qual o resto do corpo se adapta.`,
+      f:"Lombar mais carregada de um lado, uma perna que parece mais curta, desconforto na anca de um lado.",
+      a:`Alongar a lateral do tronco e a lombar do lado ${s} e treinar o apoio nos dois pés por igual.`};
+    case "shift": return {L:["LL","DFL"],
+      o:`O tronco está deslocado para a ${s} em relação aos pés. Em vez de empilhar o peso no centro, o corpo desvia-o para um lado. Isto envolve a Linha Lateral, porque os dois lados do corpo não estão a segurar por igual, e a Linha Frontal Profunda, que é o teu eixo por dentro. É muitas vezes a forma de o corpo compensar uma anca mais alta.`,
+      f:"Sensação de estar sempre apoiada numa perna, cansaço de um lado das costas.",
+      a:"Treinar o apoio nos dois pés, ativar o centro (respiração e core profundo) e soltar o lado mais compacto do tronco."};
+    case "kneeF": return it.inward ? {L:["DFL","SPL"],
+      o:`O joelho ${s} desvia para dentro. A linha interna da perna (adutores e arco interno do pé, que fazem parte da Linha Frontal Profunda) está a puxar o joelho para dentro, e a Linha Espiral, que controla a rotação da coxa e da canela, está desequilibrada. Muitas vezes o arco do pé desse lado está a abater e os glúteos laterais estão pouco ativos.`,
+      f:"Dor na parte de dentro do joelho, pés que abatem, joelhos que se juntam ao agachar.",
+      a:"Soltar os adutores, dar força ao arco do pé e ativar os glúteos laterais."}
+    : {L:["LL","DFL","SPL"],
+      o:`O joelho ${s} desvia para fora. A parte de fora da perna (banda iliotibial e peroneais, da Linha Lateral) está mais curta e puxa o joelho para fora, enquanto a linha interna (Linha Frontal Profunda) fica esticada. A Linha Espiral costuma estar envolvida na rotação da perna.`,
+      f:"Tensão na parte de fora da coxa, peso no bordo externo do pé, desconforto do lado de fora do joelho.",
+      a:"Soltar a parte de fora da coxa e da canela e acordar a linha interna da perna e o arco do pé."};
+    case "headFwd": return it.fwd ? {L:["SFL","SBL","DFL"],
+      o:"A cabeça está à frente dos ombros, um dos padrões mais comuns. A frente do corpo (Linha Frontal Superficial) está encurtada e puxada para baixo no peito e no pescoço. Atrás, a Linha Posterior Superficial aperta na base do crânio para manter os olhos na horizontal. Por dentro, os músculos profundos do pescoço (Linha Frontal Profunda) deixam de segurar. Quanto mais a cabeça avança, mais peso o pescoço e as costas de cima têm de aguentar.",
+      f:"Tensão na nuca e na base do crânio, dores de cabeça, ombros pesados, mandíbula tensa, respiração curta.",
+      a:"Abrir o peito e a frente do pescoço, soltar a base do crânio e reativar os músculos profundos do pescoço."}
+    : {L:["SBL"], o:"A cabeça está atrás da linha dos ombros. A parte de trás do pescoço (Linha Posterior Superficial) pode estar a puxar a cabeça para trás.", f:"Tensão na nuca, pescoço rígido.", a:"Soltar a parte de trás do pescoço e alongar a coluna para cima."};
+    case "trunk": return it.fwd ? {L:["SFL","SBL"],
+      o:"Os ombros estão à frente da anca, ou seja, o tronco inclina para a frente. A frente do corpo (Linha Frontal Superficial) está puxada para baixo no peito e no abdómen, e a parte de trás (Linha Posterior Superficial) fica esticada a fazer força para te manter direita. É a tensão de quem está sempre a segurar.",
+      f:"Costas de cima cansadas ou a arder, peito fechado, dificuldade em respirar fundo.",
+      a:"Abrir a frente (peito, abdómen, costelas) e fortalecer as costas de cima."}
+    : {L:["SBL","SFL","DFL"],
+      o:"Os ombros estão atrás da anca: o tronco inclina para trás para compensar uma bacia que foi para a frente. A Linha Posterior Superficial encurta na lombar, a Linha Frontal Superficial fica esticada no abdómen, e o centro (Linha Frontal Profunda, com o psoas) deixa de sustentar a bacia.",
+      f:"Lombar comprimida, barriga para fora, sensação de estar 'pendurada' nas articulações.",
+      a:"Soltar a lombar, ativar o abdómen profundo e trazer a bacia de volta para cima dos pés."};
+    case "pelvis": return it.fwd ? {L:["SBL","DFL"],
+      o:"A anca está à frente dos tornozelos. Em vez de empilhares a bacia por cima dos pés, o corpo 'pendura-se' para a frente. A parte de trás das pernas (Linha Posterior Superficial: gémeos e posteriores da coxa) encurta, e a frente da anca (Linha Frontal Profunda, com o psoas) perde tónus. Costuma vir junto com joelhos em hiperextensão.",
+      f:"Lombar e joelhos carregados, posteriores da coxa sempre presos, cansaço ao estar de pé.",
+      a:"Soltar gémeos e posteriores da coxa, ativar o centro e os glúteos e pôr o peso no meio do pé."}
+    : {L:["SFL"],
+      o:"A anca está atrás dos tornozelos e o peso vai para os calcanhares. A frente das pernas e do tronco (Linha Frontal Superficial) trabalha em excesso para o corpo não cair para trás.",
+      f:"Canelas e frente das coxas tensas, peso nos calcanhares, rigidez a andar.",
+      a:"Soltar a frente das coxas e das canelas e levar o peso para o meio do pé."};
+    case "kneeS": return it.fwd ? {L:["SBL","DFL"],
+      o:"Os joelhos ficam ligeiramente dobrados quando estás de pé. A parte de trás das pernas (Linha Posterior Superficial: gémeos e posteriores da coxa) está curta e não deixa a perna esticar por completo. Às vezes a frente da anca (Linha Frontal Profunda) também está presa.",
+      f:"Frente das coxas sempre a trabalhar, joelhos cansados, sensação de nunca descansar em pé.",
+      a:"Soltar gémeos e posteriores da coxa e abrir a frente da anca."}
+    : {L:["SBL","SFL"],
+      o:"Os joelhos estão em hiperextensão, empurrados para trás. Em vez de se apoiarem nos músculos, as pernas apoiam-se nos ligamentos. A Linha Posterior Superficial fica tensa atrás do joelho e o padrão costuma subir pelo corpo: a bacia vai para a frente e a lombar curva mais.",
+      f:"Pressão atrás do joelho, lombar carregada, joelhos instáveis.",
+      a:"Ficar de pé com os joelhos 'suaves', ativar posteriores da coxa e glúteos e acordar o arco do pé."};
+    case "plumb": return it.fwd ? {L:["SFL","SBL"],
+      o:"Visto de lado, o teu corpo está inclinado para a frente em relação aos pés. É o resumo de tudo o resto: a frente do corpo (Linha Frontal Superficial) puxa para baixo e a parte de trás (Linha Posterior Superficial) puxa para cima e faz força para não caíres. O corpo gasta energia só para estar de pé.",
+      f:"Cansaço geral em pé, costas sempre tensas, sensação de cair para a frente.",
+      a:"Trabalhar o corpo como um todo: abrir a frente, soltar a parte de trás e reequilibrar o apoio nos pés."}
+    : {L:["SFL","SBL"],
+      o:"Visto de lado, o teu corpo está inclinado para trás em relação aos pés. A frente do corpo (Linha Frontal Superficial) trabalha em excesso para te segurar.",
+      f:"Frente das coxas e abdómen tensos, peso nos calcanhares.",
+      a:"Soltar a frente do corpo e levar o peso para o meio do pé."};
+  }
+  return null;
+}
+
+const perna = s => s==="esquerdo"?"esquerda":"direita";
+function conclusoes(it){
+  const s=it.s, o=opp(it.s);
+  switch(it.k){
+    case "headTilt": return [["LL",`Linha Lateral encurtada do lado ${s} (pescoço)`],["SPL","Linha Espiral em tensão (rotação da cabeça)"]];
+    case "shoulders": return [["LL",`Linha Lateral encurtada do lado ${o} (tronco)`],["SPL","Linha Espiral em tensão (ombros)"]];
+    case "hips": return [["LL",`Linha Lateral encurtada do lado ${s} (entre a anca e as costelas)`],["DFL",`Linha Frontal Profunda encurtada do lado ${s} (quadrado lombar)`]];
+    case "shift": return [["LL",`Linha Lateral desequilibrada (tronco desviado para a ${s})`],["DFL","Linha Frontal Profunda sem apoio no centro"]];
+    case "kneeF": return it.inward
+      ? [["DFL",`Linha Frontal Profunda encurtada na perna ${perna(s)} (adutores e arco do pé)`],["SPL",`Linha Espiral desequilibrada na perna ${perna(s)}`]]
+      : [["LL",`Linha Lateral encurtada na perna ${perna(s)} (parte de fora da coxa)`],["DFL",`Linha Frontal Profunda alongada na perna ${perna(s)}`]];
+    case "headFwd": return it.fwd
+      ? [["SFL","Linha Frontal Superficial encurtada (peito e pescoço)"],["SBL","Linha Posterior Superficial encurtada (base do crânio)"],["DFL","Linha Frontal Profunda fraca (pescoço profundo)"]]
+      : [["SBL","Linha Posterior Superficial encurtada (nuca)"]];
+    case "trunk": return it.fwd
+      ? [["SFL","Linha Frontal Superficial encurtada (peito e abdómen)"],["SBL","Linha Posterior Superficial alongada (costas de cima)"]]
+      : [["SBL","Linha Posterior Superficial encurtada (lombar)"],["SFL","Linha Frontal Superficial alongada (abdómen)"]];
+    case "pelvis": return it.fwd
+      ? [["SBL","Linha Posterior Superficial encurtada (gémeos e posteriores da coxa)"],["DFL","Linha Frontal Profunda sem tónus (psoas)"]]
+      : [["SFL","Linha Frontal Superficial sobrecarregada (canelas e frente das coxas)"]];
+    case "kneeS": return it.fwd
+      ? [["SBL","Linha Posterior Superficial encurtada (atrás das pernas)"]]
+      : [["SBL","Linha Posterior Superficial em tensão atrás do joelho"],["SFL","Linha Frontal Superficial bloqueada (frente da coxa)"]];
+    case "plumb": return it.fwd
+      ? [["SFL","Linha Frontal Superficial puxada para baixo"],["SBL","Linha Posterior Superficial puxada para cima"]]
+      : [["SFL","Linha Frontal Superficial sobrecarregada"]];
+  }
+  return [];
+}
+
+function fasciaMap(all){
+  const sc={};
+  all.forEach(it=>{ if(it.g==="ok") return; const fx=fascia(it); if(!fx) return;
+    fx.L.forEach((l,i)=>{ sc[l]=(sc[l]||0)+(it.g==="acentuado"?2:1)*(i===0?1:0.6); }); });
+  return Object.entries(sc).sort((a,b)=>b[1]-a[1]);
+}
+
+
 /* ---------- análise de frente ---------- */
 function analyseFront(lm,W,H){
   const need=[7,8,11,12,23,24,25,26,27,28];
@@ -447,24 +638,24 @@ function analyseFront(lm,W,H){
   const out=[];
 
   const head=tilt(rEar,lEar);
-  out.push({n:"Inclinação da cabeça", d:`Cabeça inclinada para o lado ${lEar.y>rEar.y?"esquerdo":"direito"}`, v:head, u:"°", g:grade(head,2,5)});
+  out.push({k:"headTilt",s:lEar.y>rEar.y?"esquerdo":"direito",n:"Inclinação da cabeça", d:`Cabeça inclinada para o lado ${lEar.y>rEar.y?"esquerdo":"direito"}`, v:head, u:"°", g:grade(head,2,5)});
 
   const sh=tilt(rSh,lSh);
-  out.push({n:"Altura dos ombros", d:`Ombro ${higher(lSh,rSh)} mais alto`, v:sh, u:"°", g:grade(sh,2,4)});
+  out.push({k:"shoulders",s:higher(lSh,rSh),n:"Altura dos ombros", d:`Ombro ${higher(lSh,rSh)} mais alto`, v:sh, u:"°", g:grade(sh,2,4)});
 
   const hp=tilt(rHip,lHip);
-  out.push({n:"Altura da anca", d:`Lado ${higher(lHip,rHip)} da anca mais alto`, v:hp, u:"°", g:grade(hp,2,4)});
+  out.push({k:"hips",s:higher(lHip,rHip),n:"Altura da anca", d:`Lado ${higher(lHip,rHip)} da anca mais alto`, v:hp, u:"°", g:grade(hp,2,4)});
 
   const mAn=mid(lAn,rAn), mSh=mid(lSh,rSh);
   const shift=fromVertical(mAn,mSh,1); // + = direita da imagem = lado esquerdo da pessoa
-  out.push({n:"Desvio lateral do tronco", d:`Tronco desviado para a ${shift>0?"esquerda":"direita"}`, v:shift, u:"°", g:grade(shift,2,4)});
+  out.push({k:"shift",s:shift>0?"esquerda":"direita",n:"Desvio lateral do tronco", d:`Tronco desviado para a ${shift>0?"esquerda":"direita"}`, v:shift, u:"°", g:grade(shift,2,4)});
 
   const midX=mid(lHip,rHip).x;
   for(const [name,h,k,a] of [["esquerdo",lHip,lKn,lAn],["direito",rHip,rKn,rAn]]){
     const dev=180-angleAt(h,k,a);
     const medialDir=Math.sign(midX-h.x)||1;
     const inward=kneeOffset(h,k,a)*medialDir>0;
-    out.push({n:`Joelho ${name}`, d: dev<1 ? "Alinhado com a anca e o pé" : `Joelho a desviar para ${inward?"dentro (valgo)":"fora (varo)"}`, v:dev, u:"°", g:grade(dev,5,10)});
+    out.push({k:"kneeF",s:name,inward,n:`Joelho ${name}`, d: dev<1 ? "Alinhado com a anca e o pé" : `Joelho a desviar para ${inward?"dentro (valgo)":"fora (varo)"}`, v:dev, u:"°", g:grade(dev,5,10)});
   }
   const draw=ctx=>{
     line(ctx,rEar,lEar,"#A88BFF",true); line(ctx,rSh,lSh,"#A88BFF",true); line(ctx,rHip,lHip,"#A88BFF",true);
@@ -488,21 +679,21 @@ function analyseSide(lm,W,H){
   const out=[];
 
   const head=fromVertical(sh,ear,dir);
-  out.push({n:"Cabeça projetada", d: head>=0 ? "Orelha à frente do ombro" : "Orelha atrás do ombro", v:head, u:"°", g:grade(Math.max(0,head),10,20)});
+  out.push({k:"headFwd",fwd:head>=0,n:"Cabeça projetada", d: head>=0 ? "Orelha à frente do ombro" : "Orelha atrás do ombro", v:head, u:"°", g:grade(Math.max(0,head),10,20)});
 
   const trunk=fromVertical(hip,sh,dir);
-  out.push({n:"Inclinação do tronco", d: trunk>=0 ? "Ombros à frente da anca" : "Ombros atrás da anca", v:trunk, u:"°", g:grade(trunk,5,10)});
+  out.push({k:"trunk",fwd:trunk>=0,n:"Inclinação do tronco", d: trunk>=0 ? "Ombros à frente da anca" : "Ombros atrás da anca", v:trunk, u:"°", g:grade(trunk,5,10)});
 
   const pelv=fromVertical(an,hip,dir);
-  out.push({n:"Posição da anca", d: pelv>=0 ? "Anca à frente dos tornozelos" : "Anca atrás dos tornozelos", v:pelv, u:"°", g:grade(pelv,5,10)});
+  out.push({k:"pelvis",fwd:pelv>=0,n:"Posição da anca", d: pelv>=0 ? "Anca à frente dos tornozelos" : "Anca atrás dos tornozelos", v:pelv, u:"°", g:grade(pelv,5,10)});
 
   const kdev=180-angleAt(hip,kn,an);
   const fwd=kneeOffset(hip,kn,an)*dir>0;
-  out.push({n:"Joelhos (de lado)", d: kdev<1 ? "Joelho alinhado" : fwd ? "Joelho fletido (à frente da linha)" : "Joelho em hiperextensão (atrás da linha)", v:kdev, u:"°", g:grade(kdev,5,10)});
+  out.push({k:"kneeS",fwd,n:"Joelhos (de lado)", d: kdev<1 ? "Joelho alinhado" : fwd ? "Joelho fletido (à frente da linha)" : "Joelho em hiperextensão (atrás da linha)", v:kdev, u:"°", g:grade(kdev,5,10)});
 
   const height=Math.abs(an.y-ear.y);
   const plumbPct=((ear.x-an.x)*dir)/height*100;
-  out.push({n:"Desvio da linha de prumo", d: plumbPct>=0 ? "Orelha à frente do tornozelo (% da altura)" : "Orelha atrás do tornozelo (% da altura)", v:plumbPct, u:"%", g:grade(plumbPct,3,6)});
+  out.push({k:"plumb",fwd:plumbPct>=0,n:"Desvio da linha de prumo", d: plumbPct>=0 ? "Orelha à frente do tornozelo (% da altura)" : "Orelha atrás do tornozelo (% da altura)", v:plumbPct, u:"%", g:grade(plumbPct,3,6)});
 
   const draw=ctx=>{
     plumb(ctx,an,ear.y-40);
@@ -538,8 +729,8 @@ $("#go2").onclick = async ()=>{
     const F=analyseFront(rF.landmarks[0],cF.width,cF.height);
     const S=analyseSide(rS.landmarks[0],cS.width,cS.height);
     F.draw(cF.getContext("2d")); S.draw(cS.getContext("2d"));
-    $("#outFront").src=cF.toDataURL("image/jpeg",.85);
-    $("#outSide").src=cS.toDataURL("image/jpeg",.85);
+    state.imgF=cF.toDataURL("image/jpeg",.85); state.imgS=cS.toDataURL("image/jpeg",.85);
+    $("#outFront").src=state.imgF; $("#outSide").src=state.imgS;
     state.results={front:F.items, side:S.items};
     await new Promise(r=>setTimeout(r,700));
     renderResults();
@@ -558,9 +749,25 @@ $("#go2").onclick = async ()=>{
 
 /* ---------- passo 4: resultados ---------- */
 function row(it){
+  let fx="";
+  if(it.g!=="ok"){ const c=conclusoes(it); if(c.length) fx=`<div class="concl"><span class="ct">Na fáscia</span>${c.map(([l,t])=>`<span class="cl"><i style="background:${LINES[l].c}"></i>${t}</span>`).join("")}</div>`; }
   return `<div class="m"><i class="dot ${it.g}"></i>
-    <div class="t"><b>${it.n}</b><small>${it.d}</small></div>
-    <div class="v"><b>${f1(it.v)}${it.u}</b><small class="${it.g}">${LABEL[it.g]}</small></div></div>`;
+    <div class="t"><b>${it.n}</b><small>${it.g==="ok"?"Dentro do intervalo ideal · tendência: "+it.d.charAt(0).toLowerCase()+it.d.slice(1):it.d}</small></div>
+    <div class="v"><b>${f1(it.v)}${it.u}</b><small class="${it.g}">${LABEL[it.g]}</small></div>${fx}</div>`;
+}
+function renderMap(){
+  const all=[...state.results.front,...state.results.side];
+  const m=fasciaMap(all), box=$("#fasciaMap");
+  if(!m.length){ box.innerHTML=`<h2>O teu mapa de <em>fáscia</em></h2><p class="lead">Todas as tuas medidas estão alinhadas: as tuas linhas de fáscia parecem estar a trabalhar em equilíbrio. Excelente base para construir força e mobilidade.</p>`; return; }
+  const max=m[0][1];
+  state.map=m.map(([l])=>LINES[l].n);
+  box.innerHTML=`<h2>O teu mapa de <em>fáscia</em></h2>
+    <p class="lead">A fáscia é o tecido que envolve e liga todos os teus músculos, como um fato contínuo por baixo da pele. No modelo Anatomy Trains, do Thomas Myers, ela organiza-se em linhas que atravessam o corpo de ponta a ponta. Por isso, um desvio num sítio quase sempre tem origem ou consequência noutro.</p>
+    <p class="lead" style="margin-top:-8px">Estas são as linhas mais envolvidas no teu padrão, da mais à menos:</p>
+    ${m.map(([l,v],i)=>`<div class="ln"><div class="lh"><b>${LINES[l].n}</b>${i===0?'<span class="tag">Principal</span>':''}</div>
+      <div class="bar2"><i style="width:${Math.max(18,Math.round(v/max*100))}%;background:${LINES[l].c}"></i></div>
+      <p>${LINES[l].d}</p></div>`).join("")}
+    <p class="lead" style="margin:14px 0 0">Abre "O que isto significa na tua fáscia" em cada medida para veres o que está a acontecer e o que costuma ajudar.</p>`;
 }
 function renderResults(){
   const all=[...state.results.front,...state.results.side];
@@ -588,6 +795,7 @@ $("#unlock").onclick = async ()=>{
     pontuacao:$("#scoreNum").textContent,
     frente:state.results.front.map(fmt).join("\n"),
     lado:state.results.side.map(fmt).join("\n"),
+    linhas_fascia:fasciaMap([...state.results.front,...state.results.side]).map(([l])=>LINES[l].n).join(", ")||"Equilibradas",
     _subject:`Novo scan de postura: ${state.nome}`
   };
   if(CONFIG.FORM_ENDPOINT){
@@ -601,14 +809,72 @@ $("#unlock").onclick = async ()=>{
   } else {
     console.warn("[Scan de Postura] FORM_ENDPOINT vazio — modo de teste, contacto não enviado:", payload);
   }
+  showFree();
+  state.email=$("#email").value.trim(); state.free=true; saveScan();
+  $("#report").scrollIntoView({behavior:"smooth"});
+};
+
+
+
+/* ---------- parte paga: leitura da fáscia ---------- */
+const KEY="resetScanPostura";
+function saveScan(){ try{ localStorage.setItem(KEY, JSON.stringify({nome:state.nome,objetivo:state.objetivo,email:state.email||"",results:state.results,imgF:state.imgF,imgS:state.imgS,free:!!state.free,t:Date.now()})); }catch(e){ try{ localStorage.setItem(KEY, JSON.stringify({nome:state.nome,objetivo:state.objetivo,email:state.email||"",results:state.results,free:!!state.free,t:Date.now()})); }catch(_){} } }
+function loadScan(){ try{ return JSON.parse(localStorage.getItem(KEY)||"null"); }catch(e){ return null; } }
+function isPaidDevice(){ try{ return localStorage.getItem(KEY+"_pago")==="1"; }catch(e){ return false; } }
+function markPaid(){ try{ localStorage.setItem(KEY+"_pago","1"); }catch(e){} }
+async function sha(s){ const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s)); return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join(""); }
+async function codeOk(c){ if(!c) return false; try{ return (await sha(c.trim().toUpperCase()))===CONFIG.CODE_HASH; }catch(e){ return false; } }
+
+function showPaywall(){
+  const all=[...state.results.front,...state.results.side];
+  const m=fasciaMap(all), off=all.filter(i=>i.g!=="ok").length;
+  const pw=$("#paywall");
+  $("#pwCount").textContent = off ? `${off} ${off===1?"desvio explicado":"desvios explicados"} na tua leitura` : "Leitura completa da tua fáscia";
+  $("#pwPrice").textContent = CONFIG.PRICE;
+  const b=$("#payBtn");
+  if(!CONFIG.PAY_LINK){ b.classList.add("disabled"); b.removeAttribute("href"); }
+  else b.href=CONFIG.PAY_LINK;
+  pw.classList.remove("hidden");
+}
+function unlockPaid(scroll=true){
+  state.paid=true; markPaid();
+  $("#paywall").classList.add("hidden");
+  $("#listFront").innerHTML=state.results.front.map(row).join("");
+  $("#listSide").innerHTML=state.results.side.map(row).join("");
+  if(scroll) $("#report").scrollIntoView({behavior:"smooth"});
+}
+function showFree(){
   $("#gate").classList.add("hidden");
   $("#report").classList.remove("locked");
   $("#thanks").textContent=CONFIG.THANKS.replace("{nome}",state.nome);
   $("#after").classList.remove("hidden");
-  $("#report").scrollIntoView({behavior:"smooth"});
+}
+$("#payBtn").addEventListener("click",e=>{ if(!CONFIG.PAY_LINK){ e.preventDefault(); return; } saveScan(); });
+$("#codeBtn").onclick=async()=>{
+  const c=$("#codeIn").value;
+  if(await codeOk(c)){ unlockPaid(); }
+  else { const e=$("#errCode"); e.textContent="Código inválido. Confirma o código que recebeste depois do pagamento."; e.style.display="block"; }
 };
+// regresso do pagamento: ...?codigo=XXXX
+(async()=>{
+  const p=new URLSearchParams(location.search), c=p.get("codigo");
+  const saved=loadScan();
+  const valid = c ? await codeOk(c) : false;
+  if(valid) markPaid();
+  if(c) history.replaceState(null,"",location.pathname);
+  if(saved && saved.results && (valid || saved.free)){
+    if(!valid && !p.has("voltar")) return; // só restaura automaticamente depois do pagamento
+    Object.assign(state,{nome:saved.nome,objetivo:saved.objetivo,email:saved.email,results:saved.results,imgF:saved.imgF||"",imgS:saved.imgS||"",free:true});
+    if(state.imgF) $("#outFront").src=state.imgF; if(state.imgS) $("#outSide").src=state.imgS;
+    if(!state.imgF) document.querySelector(".shots").classList.add("hidden");
+    renderResults(); go(4); showFree();
+    if(valid||isPaidDevice()) unlockPaid(); else showPaywall();
+  } else if(valid){
+    const n=$("#paidNote"); n.classList.remove("hidden");
+  }
+})();
 
-$("#restart").onclick=()=>location.reload();
+window.addEventListener("beforeprint",()=>document.querySelectorAll(".fx").forEach(d=>d.open=true));
 </script>
 </body>
 </html>
