@@ -475,7 +475,7 @@ function getLandmarker(){
       catch(e){ lastErr=e; console.warn("Modelo falhou:",u,e); }
     }
     if(!buf) throw lastErr||new Error("model");
-    const opts = d => ({ baseOptions:{ modelAssetBuffer:buf, delegate:d }, runningMode:"IMAGE", numPoses:1 });
+    const opts = d => ({ baseOptions:{ modelAssetBuffer:buf, delegate:d }, runningMode:"IMAGE", numPoses:1, outputSegmentationMasks:true });
     try { return await PoseLandmarker.createFromOptions(vision, opts("GPU")); }
     catch(e){ console.warn("GPU falhou, a usar CPU",e); return await PoseLandmarker.createFromOptions(vision, opts("CPU")); }
   })();
@@ -598,6 +598,11 @@ function conclusoes(it){
     case "shoulders": return [["LL",`Linha Lateral encurtada do lado ${o} (tronco)`],["SPL","Linha Espiral em tensão (ombros)"]];
     case "hips": return [["LL",`Linha Lateral encurtada do lado ${s} (entre a anca e as costelas)`],["DFL",`Linha Frontal Profunda encurtada do lado ${s} (quadrado lombar)`]];
     case "shift": return [["LL",`Linha Lateral desequilibrada (tronco desviado para a ${s})`],["DFL","Linha Frontal Profunda sem apoio no centro"]];
+    case "knees": return it.tend==="valgo"
+      ? [["DFL","Linha Frontal Profunda encurtada (adutores e arco interno do pé)"],["SPL","Linha Espiral desequilibrada (rotação da coxa e da canela)"],["LL","Linha Lateral sem força na anca (glúteo médio)"]]
+      : it.tend==="varo"
+      ? [["LL","Linha Lateral encurtada (parte de fora da coxa e da perna)"],["DFL","Linha Frontal Profunda alongada (parte de dentro da perna)"],["SPL","Linha Espiral desequilibrada"]]
+      : [["SPL","Linha Espiral desequilibrada entre as duas pernas"],["DFL","Linha Frontal Profunda assimétrica (adutores)"],["LL","Linha Lateral assimétrica nas pernas"]];
     case "kneeF": return it.inward
       ? [["DFL",`Linha Frontal Profunda encurtada na perna ${perna(s)} (adutores e arco do pé)`],["SPL",`Linha Espiral desequilibrada na perna ${perna(s)}`]]
       : [["LL",`Linha Lateral encurtada na perna ${perna(s)} (parte de fora da coxa)`],["DFL",`Linha Frontal Profunda alongada na perna ${perna(s)}`]];
@@ -613,6 +618,9 @@ function conclusoes(it){
     case "kneeS": return it.fwd
       ? [["SBL","Linha Posterior Superficial encurtada (atrás das pernas)"]]
       : [["SBL","Linha Posterior Superficial em tensão atrás do joelho"],["SFL","Linha Frontal Superficial bloqueada (frente da coxa)"]];
+    case "lumbar": return it.tend==="ante"
+      ? [["DFL","Linha Frontal Profunda encurtada (psoas e flexores da anca)"],["SBL","Linha Posterior Superficial encurtada (lombar)"],["SFL","Linha Frontal Superficial alongada (abdómen)"]]
+      : [["SBL","Linha Posterior Superficial encurtada (posteriores da coxa)"],["SFL","Linha Frontal Superficial encurtada (abdómen)"],["DFL","Linha Frontal Profunda sem tónus (psoas)"]];
     case "plumb": return it.fwd
       ? [["SFL","Linha Frontal Superficial puxada para baixo"],["SBL","Linha Posterior Superficial puxada para cima"]]
       : [["SFL","Linha Frontal Superficial sobrecarregada"]];
@@ -622,11 +630,42 @@ function conclusoes(it){
 
 function fasciaMap(all){
   const sc={};
-  all.forEach(it=>{ if(it.g==="ok") return; const fx=fascia(it); if(!fx) return;
-    fx.L.forEach((l,i)=>{ sc[l]=(sc[l]||0)+(it.g==="acentuado"?2:1)*(i===0?1:0.6); }); });
+  all.forEach(it=>{ if(it.g==="ok") return; const c=conclusoes(it); if(!c.length) return;
+    c.map(x=>x[0]).forEach((l,i)=>{ sc[l]=(sc[l]||0)+(it.g==="acentuado"?2:1)*(i===0?1:0.6); }); });
   return Object.entries(sc).sort((a,b)=>b[1]-a[1]);
 }
 
+
+/* contorno das costas na foto de lado → profundidade da curva lombar (% do comprimento do tronco) */
+function lumbarCurve(mask,W,H,sh,hip,kn,dir){
+  if(!mask) return null;
+  const sx=mask.w/W, sy=mask.h/H;
+  const M=(x,y)=>{ const mx=Math.round(x*sx), my=Math.round(y*sy); if(mx<0||my<0||mx>=mask.w||my>=mask.h) return 0; return mask.d[my*mask.w+mx]; };
+  const trunk=Math.hypot(hip.x-sh.x,hip.y-sh.y);
+  const y0=Math.round(sh.y), y1=Math.round(hip.y+0.45*(kn.y-hip.y));
+  const pts=[]; let prev=null;
+  for(let y=y0;y<y1;y++){
+    const t=Math.min(Math.max((y-sh.y)/(hip.y-sh.y),0),1);
+    let x=Math.round(sh.x+(hip.x-sh.x)*t);
+    if(M(x,y)<0.5) continue;
+    while(x>0 && x<W-1 && M(x,y)>=0.5) x-=dir;
+    if(prev!==null && Math.abs(x-prev)>0.06*trunk) continue;
+    pts.push({x,y}); prev=x;
+  }
+  if(pts.length<30) return null;
+  const post=pts.map(p=>-dir*p.x), k=15, half=7;
+  const ps=post.map((_,i)=>{ const w=[]; for(let j=i-half;j<=i+half;j++) w.push(post[Math.min(Math.max(j,0),post.length-1)]); w.sort((a,b)=>a-b); return w[half]; });
+  const ys=pts.map(p=>p.y), yh=hip.y, ysh=sh.y;
+  const idx=(a,b)=>ys.map((y,i)=>y>=a&&y<=b?i:-1).filter(i=>i>=0);
+  const th=idx(ysh+0.12*(yh-ysh), ysh+0.55*(yh-ysh)), bu=idx(yh-0.25*(yh-ysh), yh+0.4*(kn.y-yh));
+  if(!th.length||!bu.length) return null;
+  const it=th.reduce((a,b)=>ps[b]>ps[a]?b:a), ib=bu.reduce((a,b)=>ps[b]>ps[a]?b:a);
+  if(ib<=it+5) return null;
+  let best=0, iv=it;
+  for(let i=it;i<=ib;i++){ const line=ps[it]+(ps[ib]-ps[it])*(ys[i]-ys[it])/(ys[ib]-ys[it]); const dpt=line-ps[i]; if(dpt>best){best=dpt; iv=i;} }
+  const P=i=>({x:-dir*ps[i], y:ys[i]});
+  return {pct:best/trunk*100, a:P(it), b:P(ib), v:P(iv), pts};
+}
 
 /* ---------- análise de frente ---------- */
 function analyseFront(lm,W,H){
@@ -650,13 +689,18 @@ function analyseFront(lm,W,H){
   const shift=fromVertical(mAn,mSh,1); // + = direita da imagem = lado esquerdo da pessoa
   out.push({k:"shift",s:shift>0?"esquerda":"direita",n:"Desvio lateral do tronco", d:`Tronco desviado para a ${shift>0?"esquerda":"direita"}`, v:shift, u:"°", g:grade(shift,2,4)});
 
+  // joelhos: valgo (para dentro) / varo (para fora), com os dois lados combinados
   const midX=mid(lHip,rHip).x;
-  for(const [name,h,k,a] of [["esquerdo",lHip,lKn,lAn],["direito",rHip,rKn,rAn]]){
-    const dev=180-angleAt(h,k,a);
-    const medialDir=Math.sign(midX-h.x)||1;
-    const inward=kneeOffset(h,k,a)*medialDir>0;
-    out.push({k:"kneeF",s:name,inward,n:`Joelho ${name}`, d: dev<1 ? "Alinhado com a anca e o pé" : `Joelho a desviar para ${inward?"dentro (valgo)":"fora (varo)"}`, v:dev, u:"°", g:grade(dev,5,10)});
-  }
+  const kneeSigned=(h,k,a)=>{ const dev=180-angleAt(h,k,a); const medialDir=Math.sign(midX-h.x)||1; return kneeOffset(h,k,a)*medialDir>0 ? dev : -dev; };
+  const sL=kneeSigned(lHip,lKn,lAn), sR=kneeSigned(rHip,rKn,rAn); // + = para dentro
+  const avg=(sL+sR)/2, worst=Math.max(Math.abs(sL),Math.abs(sR));
+  let kt, kd, kv;
+  const which = Math.abs(sL)>Math.abs(sR)+1 ? " · mais no joelho esquerdo" : Math.abs(sR)>Math.abs(sL)+1 ? " · mais no joelho direito" : "";
+  if(Math.sign(sL)!==Math.sign(sR) && Math.min(Math.abs(sL),Math.abs(sR))>2){
+    kt="assim"; kv=worst; kd=`Padrão assimétrico: joelho ${sL>0?"esquerdo para dentro, direito para fora":"direito para dentro, esquerdo para fora"}`;
+  } else if(avg>=0){ kt="valgo"; kv=avg; kd=`Tendência para valgo (joelhos para dentro)${which}`; }
+  else { kt="varo"; kv=-avg; kd=`Tendência para varo (joelhos para fora)${which}`; }
+  out.push({k:"knees",tend:kt,n:"Joelhos (de frente)",d:kd,v:kv,u:"°",g:grade(kv,3,7)});
   const draw=ctx=>{
     line(ctx,rEar,lEar,"#A88BFF",true); line(ctx,rSh,lSh,"#A88BFF",true); line(ctx,rHip,lHip,"#A88BFF",true);
     line(ctx,lHip,lKn,"#f3e9dc"); line(ctx,lKn,lAn,"#f3e9dc"); line(ctx,rHip,rKn,"#f3e9dc"); line(ctx,rKn,rAn,"#f3e9dc");
@@ -667,7 +711,7 @@ function analyseFront(lm,W,H){
 }
 
 /* ---------- análise de lado ---------- */
-function analyseSide(lm,W,H){
+function analyseSide(lm,W,H,mask){
   const L=[7,11,23,25,27], R=[8,12,24,26,28];
   const vis=a=>a.reduce((s,i)=>s+(lm[i].visibility??1),0)/a.length;
   const idx = vis(L)>=vis(R) ? L : R;
@@ -695,7 +739,23 @@ function analyseSide(lm,W,H){
   const plumbPct=((ear.x-an.x)*dir)/height*100;
   out.push({k:"plumb",fwd:plumbPct>=0,n:"Desvio da linha de prumo", d: plumbPct>=0 ? "Orelha à frente do tornozelo (% da altura)" : "Orelha atrás do tornozelo (% da altura)", v:plumbPct, u:"%", g:grade(plumbPct,3,6)});
 
+
+  // curva lombar (estimativa da inclinação da bacia) a partir da silhueta
+  let lumb=null;
+  try{ lumb=lumbarCurve(mask,W,H,sh,hip,kn,dir); }catch(e){ console.warn("Curva lombar falhou",e); }
+  if(lumb){
+    const p=lumb.pct;
+    const tend = p>=7 ? "ante" : "retro";
+    const g2 = p>15?"acentuado": p>10?"ligeiro": p<2?"acentuado": p<4?"ligeiro":"ok";
+    const d2 = p>10 ? "Curva lombar acentuada · tendência para anteversão da bacia"
+             : p<4 ? "Lombar plana · tendência para retroversão da bacia"
+             : (tend==="ante" ? "Bacia neutra, ligeira tendência para anteversão" : "Bacia neutra, ligeira tendência para retroversão");
+    out.push({k:"lumbar",tend,n:"Curva lombar (bacia)",d:d2,v:p,u:"%",g:g2});
+  }
   const draw=ctx=>{
+    if(lumb){ ctx.save(); ctx.fillStyle="rgba(255,106,174,.9)"; lumb.pts.forEach(p=>ctx.fillRect(p.x-1,p.y-1,2.5,2.5));
+      ctx.setLineDash([lw(ctx)*3,lw(ctx)*2]); ctx.strokeStyle="#FF6AAE"; ctx.lineWidth=lw(ctx)*0.8; ctx.beginPath(); ctx.moveTo(lumb.a.x,lumb.a.y); ctx.lineTo(lumb.b.x,lumb.b.y); ctx.stroke(); ctx.restore();
+      dot(ctx,lumb.v); }
     plumb(ctx,an,ear.y-40);
     line(ctx,ear,sh,"#A88BFF"); line(ctx,sh,hip,"#A88BFF"); line(ctx,hip,kn,"#f3e9dc"); line(ctx,kn,an,"#f3e9dc");
     [ear,sh,hip,kn,an].forEach(p=>dot(ctx,p));
@@ -722,12 +782,15 @@ $("#go2").onclick = async ()=>{
     const pl = await getLandmarker();
     $("#loadmsg").textContent="A detetar os pontos do teu corpo";
     const cF=copyCanvas(state.front), cS=copyCanvas(state.side);
-    const rF=pl.detect(cF), rS=pl.detect(cS);
+    const rF=pl.detect(cF); try{ rF.segmentationMasks?.forEach(m=>m.close()); }catch(e){}
+    const rS=pl.detect(cS);
+    let maskS=null;
+    try{ const mk=rS.segmentationMasks?.[0]; if(mk){ maskS={w:mk.width,h:mk.height,d:mk.getAsFloat32Array().slice()}; } rS.segmentationMasks?.forEach(m=>m.close()); }catch(e){ console.warn("Sem máscara de silhueta",e); }
     if(!rF.landmarks?.length) throw new Error("front-none");
     if(!rS.landmarks?.length) throw new Error("side-none");
     $("#loadmsg").textContent="A calcular os teus ângulos";
     const F=analyseFront(rF.landmarks[0],cF.width,cF.height);
-    const S=analyseSide(rS.landmarks[0],cS.width,cS.height);
+    const S=analyseSide(rS.landmarks[0],cS.width,cS.height,maskS);
     F.draw(cF.getContext("2d")); S.draw(cS.getContext("2d"));
     state.imgF=cF.toDataURL("image/jpeg",.85); state.imgS=cS.toDataURL("image/jpeg",.85);
     $("#outFront").src=state.imgF; $("#outSide").src=state.imgS;
